@@ -166,6 +166,24 @@ var categoryMap = {
   'other': ['other', 'snack']
 };
 
+var depotCodeMap = {
+  '01M0PJAVG0K11H7521TSXYX3TD': 'BLK',
+  '01M0PJAVE5QGXM3MDBGTCBY0VZ': 'MAN',
+  '01M0PJAVE5TRSCMYM0SYD5WTJA': 'THU',
+  '01M0PJAVE5TJC8NX6GX58TCXAG': 'TIV',
+  '01M0PJAVF9BKRZDVK9W34CN7MZ': 'EAG',
+  '01M0PJAVF6BYJZ13P86XRH709T': 'FAR',
+  '01M0PJAVEKTCPPWCN8ADJ7PB82': 'HUL',
+  '01M0PJAVFCJSZ9R40TN9WR8H7S': 'CAR',
+  '01M0PJAVFXA3JE4J7HFJHMCKZ8': 'RUN',
+  '01M0PJAVHV0793AG8APFXK80MT': 'BED',
+  '01M0PJAVFJSP9RB9MNYVHESTEK': 'WOR',
+  '01M0PJAVH1B9S79GDV6HH29NFG': 'WOL',
+  '01M0PJAVGG7E1AV961C1F55RJ8': 'BUR',
+  '01M0PJAVH6JT6ERJ0QK6Y6Q50R': 'STR',
+  '01M0PJAVH0JBZ6VMGVT1TQ3F1K': 'CNC'
+};
+
 client.on('app.registered', function() {
   client.invoke('resize', { width: '100%', height: '600px' });
   showStatus('Ready. Enter your account number above.', false);
@@ -304,16 +322,23 @@ function loadProducts(depotId) {
   document.getElementById('product-section').style.display = 'block';
   showLoading(true);
 
+  var depotCode = depotCodeMap[depotId] || '';
+
+  if (!depotCode) {
+    showLoading(false);
+    showStatus('Depot not recognised. Please call 0800 587 0773 for help.', true);
+    return;
+  }
+
   client.request({
-    url: '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotId),
+    url: '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotCode),
     type: 'GET'
-  }).then(function(depotData) {
-    var depotRecords = depotData.custom_object_records || [];
+  }).then(function(depotProductData) {
+    var depotRecords = depotProductData.custom_object_records || [];
     var availableProductIds = [];
     depotRecords.forEach(function(r) {
-      var f = r.custom_object_fields;
-      if (f.available === true) {
-        availableProductIds.push(f.product);
+      if (r.custom_object_fields.available === true) {
+        availableProductIds.push(r.custom_object_fields.product);
       }
     });
 
