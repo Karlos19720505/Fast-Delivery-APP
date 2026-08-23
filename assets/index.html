@@ -83,10 +83,12 @@ Fast Delivery - Product Selector
 </div>
 <div class="account-panel" id="account-panel">
 <div class="account-panel-title">Step 1 - Confirm your account</div>
+<form id="account-form" onsubmit="return false;">
 <div class="account-input-row">
-<input type="text" id="account-input" placeholder="Enter your account number..."/>
-<button class="validate-btn" id="validate-btn"><span id="confirm-btn-text">Confirm my account</span></button>
+<input type="text" id="account-input" placeholder="Enter your account number..." autocomplete="off"/>
+<button type="submit" class="validate-btn" id="validate-btn"><span id="confirm-btn-text">Confirm my account</span></button>
 </div>
+</form>
 <div class="account-status" id="account-status"></div>
 <div class="account-confirmed" id="account-confirmed">
 <div class="confirmed-row">
