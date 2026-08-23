@@ -1,1 +1,21 @@
-
+{
+  "name": "Fast Delivery Product Selector",
+  "author": {
+    "name": "Carlsberg Britvic",
+    "email": "karl.morton@carlsbergmarstons.co.uk"
+  },
+  "defaultLocale": "en",
+  "private": true,
+  "version": "1.0.0",
+  "frameworkVersion": "2.0",
+  "location": {
+    "support": {
+      "ticket_editor": {
+        "url": "assets/index.html"
+      },
+      "new_ticket_sidebar": {
+        "url": "assets/index.html"
+      }
+    }
+  }
+}

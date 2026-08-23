@@ -1,1 +1,145 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Fast Delivery</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; background: #F7F7F7; }
+.app-header { background: #00703C; color: #fff; padding: 10px 14px; font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+.app-header span { font-size: 11px; opacity: 0.8; font-weight: 400; }
+.account-panel { background: #fff; border: 1px solid #EBEBEB; margin: 8px; border-radius: 6px; padding: 12px; }
+.account-panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #00703C; margin-bottom: 8px; letter-spacing: 0.5px; }
+.account-input-row { display: flex; gap: 6px; }
+.account-input-row input { flex: 1; padding: 7px 10px; border: 1px solid #D0D0D0; border-radius: 4px; font-size: 13px; outline: none; }
+.account-input-row input:focus { border-color: #00703C; }
+.validate-btn { padding: 7px 14px; background: #00703C; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+.validate-btn:hover { background: #005a30; }
+.validate-btn:disabled { background: #AAA; cursor: not-allowed; }
+.account-status { margin-top: 8px; padding: 8px 10px; border-radius: 4px; font-size: 12px; display: none; }
+.account-status.loading { background: #F5F5F5; color: #888; display: block; }
+.account-status.error { background: #FFF0F0; color: #CC0000; border: 1px solid #FFCCCC; display: block; }
+.account-confirmed { display: none; margin-top: 8px; }
+.confirmed-row { display: flex; align-items: flex-start; gap: 8px; }
+.confirmed-icon { width: 28px; height: 28px; background: #00703C; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.confirmed-details { flex: 1; }
+.confirmed-name { font-size: 13px; font-weight: 700; color: #00703C; }
+.confirmed-depot { font-size: 11px; color: #fff; background: #00703C; display: inline-block; padding: 1px 8px; border-radius: 10px; margin-top: 2px; font-weight: 700; }
+.confirmed-address { font-size: 11px; color: #888; margin-top: 3px; }
+.change-account { font-size: 11px; color: #00703C; cursor: pointer; text-decoration: underline; margin-top: 6px; display: inline-block; background: none; border: none; padding: 0; }
+.tabs { display: flex; background: #fff; border-bottom: 2px solid #E8E8E8; overflow-x: auto; }
+.tab { padding: 9px 14px; font-size: 12px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
+.tab:hover { color: #00703C; }
+.tab.active { color: #00703C; border-bottom-color: #00703C; }
+.search-area { background: #fff; padding: 10px 12px; border-bottom: 1px solid #EBEBEB; }
+.search-wrap { position: relative; }
+.search-wrap input { width: 100%; padding: 8px 12px; border: 1px solid #D0D0D0; border-radius: 5px; font-size: 13px; outline: none; background: #FAFAFA; }
+.search-wrap input:focus { border-color: #00703C; background: #fff; }
+.dropdown { position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1px solid #D0D0D0; border-radius: 5px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); max-height: 200px; overflow-y: auto; z-index: 999; display: none; }
+.dropdown.open { display: block; }
+.dropdown-item { padding: 9px 12px; cursor: pointer; border-bottom: 1px solid #F5F5F5; }
+.dropdown-item:hover { background: #F0F8F4; }
+.di-name { font-size: 13px; font-weight: 600; color: #1A1A1A; }
+.di-meta { font-size: 11px; color: #888; margin-top: 1px; }
+.di-sku { font-size: 10px; color: #C8A84B; font-weight: 600; }
+.dropdown-empty { padding: 12px; text-align: center; color: #AAA; font-size: 12px; }
+.add-row { display: none; align-items: center; gap: 8px; margin-top: 8px; background: #F0F8F4; border: 1px solid #B3DEC8; border-radius: 5px; padding: 8px 10px; }
+.add-row.visible { display: flex; }
+.sel-name { flex: 1; font-size: 12px; font-weight: 600; color: #00703C; }
+.sel-meta { font-size: 11px; color: #666; }
+.qty-input { width: 56px; padding: 5px 8px; border: 1px solid #D0D0D0; border-radius: 4px; font-size: 13px; font-weight: 700; text-align: center; outline: none; }
+.qty-input:focus { border-color: #00703C; }
+.add-item-btn { padding: 6px 14px; background: #00703C; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: pointer; }
+.add-item-btn:hover { background: #005a30; }
+.cancel-btn { padding: 6px 10px; background: none; border: 1px solid #D0D0D0; border-radius: 4px; font-size: 12px; color: #888; cursor: pointer; }
+.order-section { background: #fff; margin-top: 8px; }
+.order-header { padding: 8px 12px; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #00703C; border-bottom: 1px solid #EBEBEB; display: flex; align-items: center; justify-content: space-between; }
+.order-count { background: #C8A84B; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px; }
+.order-empty { padding: 16px 12px; text-align: center; color: #BBB; font-size: 12px; }
+.order-item { display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-bottom: 1px solid #F5F5F5; }
+.order-item:hover { background: #FAFAFA; }
+.oi-info { flex: 1; }
+.oi-name { font-size: 12px; font-weight: 600; color: #1A1A1A; }
+.oi-meta { font-size: 11px; color: #888; margin-top: 1px; }
+.oi-sku { font-size: 10px; color: #C8A84B; font-weight: 600; }
+.oi-qty-wrap { display: flex; align-items: center; gap: 4px; background: #F5F5F5; border-radius: 4px; padding: 3px 6px; }
+.oi-qty-btn { width: 20px; height: 20px; border: none; background: #fff; border-radius: 3px; font-size: 14px; font-weight: 700; color: #00703C; cursor: pointer; }
+.oi-qty { font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; }
+.oi-remove { background: none; border: none; color: #CC0000; font-size: 14px; cursor: pointer; opacity: 0.5; padding: 0 2px; }
+.oi-remove:hover { opacity: 1; }
+.status-bar { padding: 8px 12px; font-size: 12px; background: #F0F8F4; border-top: 1px solid #B3DEC8; color: #00703C; display: none; }
+.status-bar.visible { display: block; }
+.status-bar.warning { background: #FFF8E8; border-top-color: #F0D080; color: #7A5A00; }
+.loading-state { padding: 16px 12px; text-align: center; color: #888; font-size: 12px; }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid #D0D0D0; border-top-color: #00703C; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 5px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="app-header">
+Fast Delivery - Product Selector
+<span id="depot-label"></span>
+</div>
+<div class="account-panel" id="account-panel">
+<div class="account-panel-title">Step 1 - Confirm your account</div>
+<div class="account-input-row">
+<input type="text" id="account-input" placeholder="Enter your account number..." onkeydown="if(event.key==='Enter')validateAccount()"/>
+<button class="validate-btn" id="validate-btn" onclick="validateAccount()"><span id="confirm-btn-text">Confirm my account</span></button>
+</div>
+<div class="account-status" id="account-status"></div>
+<div class="account-confirmed" id="account-confirmed">
+<div class="confirmed-row">
+<div class="confirmed-icon">OK</div>
+<div class="confirmed-details">
+<div class="confirmed-name" id="confirmed-name"></div>
+<div class="confirmed-depot" id="confirmed-depot"></div>
+<div class="confirmed-address" id="confirmed-address"></div>
+</div>
+</div>
+<button class="change-account" onclick="changeAccount()">Change account</button>
+</div>
+</div>
+<div id="product-section" style="display:none;">
+<div class="tabs">
+<div class="tab active" data-cat="all" onclick="setTab(this)">All</div>
+<div class="tab" data-cat="beer" onclick="setTab(this)">Beer</div>
+<div class="tab" data-cat="cider" onclick="setTab(this)">Cider</div>
+<div class="tab" data-cat="wine" onclick="setTab(this)">Wine</div>
+<div class="tab" data-cat="spirits" onclick="setTab(this)">Spirits</div>
+<div class="tab" data-cat="soft_drink" onclick="setTab(this)">Softs</div>
+<div class="tab" data-cat="other" onclick="setTab(this)">Other</div>
+</div>
+<div class="search-area">
+<div class="search-wrap" id="search-wrap">
+<input type="text" id="search-input" placeholder="Type to search products..." autocomplete="off" oninput="onSearch()" onfocus="onSearchFocus()"/>
+<div class="dropdown" id="dropdown"></div>
+</div>
+<div class="add-row" id="add-row">
+<div>
+<div class="sel-name" id="sel-name"></div>
+<div class="sel-meta" id="sel-meta"></div>
+</div>
+<input type="number" class="qty-input" id="qty-input" value="1" min="1" max="999"/>
+<button class="add-item-btn" onclick="confirmAdd()">Add</button>
+<button class="cancel-btn" onclick="cancelAdd()">Cancel</button>
+</div>
+</div>
+<div class="loading-state" id="loading-state">
+<span class="spinner"></span> Loading products for your depot...
+</div>
+</div>
+<div class="order-section" id="order-section" style="display:none;">
+<div class="order-header">
+Your order
+<span class="order-count" id="order-count">0</span>
+</div>
+<div id="order-items">
+<div class="order-empty">No products added yet.</div>
+</div>
+</div>
+<div class="status-bar" id="status-bar"></div>
+<script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

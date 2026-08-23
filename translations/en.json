@@ -1,0 +1,7 @@
+{
+  "app": {
+    "name": "Fast Delivery Product Selector",
+    "short_description": "Search and select products for Fast Delivery orders.",
+    "long_description": "Search the product catalogue and build Fast Delivery orders."
+  }
+}
