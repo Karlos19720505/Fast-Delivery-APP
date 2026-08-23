@@ -244,7 +244,7 @@ function validateAccount() {
       showAccountStatus('error', 'Account not found. Please check and try again or contact your Sales Development Manager.');
       document.getElementById('validate-btn').disabled = false;
     }
-  }).catch(function(err) {
+  }).catch(function() {
     showAccountStatus('error', 'Could not look up account. Please try again or call 0800 587 0773.');
     document.getElementById('validate-btn').disabled = false;
   });
@@ -305,14 +305,14 @@ function loadProducts(depotId) {
   showLoading(true);
 
   client.request({
-    url: '/api/v2/custom_objects/fddepotproduct/records?page[size]=100',
+    url: '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotId),
     type: 'GET'
   }).then(function(depotData) {
     var depotRecords = depotData.custom_object_records || [];
     var availableProductIds = [];
     depotRecords.forEach(function(r) {
       var f = r.custom_object_fields;
-      if (f.available === true && (!depotId || f.depot === depotId)) {
+      if (f.available === true) {
         availableProductIds.push(f.product);
       }
     });
