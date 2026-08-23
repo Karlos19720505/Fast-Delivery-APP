@@ -42,7 +42,6 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .dropdown-item:hover { background: #F0F8F4; }
 .di-name { font-size: 13px; font-weight: 600; color: #1A1A1A; }
 .di-meta { font-size: 11px; color: #888; margin-top: 1px; }
-.di-sku { font-size: 10px; color: #C8A84B; font-weight: 600; }
 .dropdown-empty { padding: 12px; text-align: center; color: #AAA; font-size: 12px; }
 .add-row { display: none; align-items: center; gap: 8px; margin-top: 8px; background: #F0F8F4; border: 1px solid #B3DEC8; border-radius: 5px; padding: 8px 10px; }
 .add-row.visible { display: flex; }
@@ -62,7 +61,6 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .oi-info { flex: 1; }
 .oi-name { font-size: 12px; font-weight: 600; color: #1A1A1A; }
 .oi-meta { font-size: 11px; color: #888; margin-top: 1px; }
-.oi-sku { font-size: 10px; color: #C8A84B; font-weight: 600; }
 .oi-qty-wrap { display: flex; align-items: center; gap: 4px; background: #F5F5F5; border-radius: 4px; padding: 3px 6px; }
 .oi-qty-btn { width: 20px; height: 20px; border: none; background: #fff; border-radius: 3px; font-size: 14px; font-weight: 700; color: #00703C; cursor: pointer; }
 .oi-qty { font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; }
@@ -166,24 +164,6 @@ var categoryMap = {
   'other': ['other', 'snack']
 };
 
-var depotCodeMap = {
-  '01M0PJAVG0K11H7521TSXYX3TD': 'BLK',
-  '01M0PJAVE5QGXM3MDBGTCBY0VZ': 'MAN',
-  '01M0PJAVE5TRSCMYM0SYD5WTJA': 'THU',
-  '01M0PJAVE5TJC8NX6GX58TCXAG': 'TIV',
-  '01M0PJAVF9BKRZDVK9W34CN7MZ': 'EAG',
-  '01M0PJAVF6BYJZ13P86XRH709T': 'FAR',
-  '01M0PJAVEKTCPPWCN8ADJ7PB82': 'HUL',
-  '01M0PJAVFCJSZ9R40TN9WR8H7S': 'CAR',
-  '01M0PJAVFXA3JE4J7HFJHMCKZ8': 'RUN',
-  '01M0PJAVHV0793AG8APFXK80MT': 'BED',
-  '01M0PJAVFJSP9RB9MNYVHESTEK': 'WOR',
-  '01M0PJAVH1B9S79GDV6HH29NFG': 'WOL',
-  '01M0PJAVGG7E1AV961C1F55RJ8': 'BUR',
-  '01M0PJAVH6JT6ERJ0QK6Y6Q50R': 'STR',
-  '01M0PJAVH0JBZ6VMGVT1TQ3F1K': 'CNC'
-};
-
 var brandAliases = {
   'carlsberg': ['cb pilsner', 'cb export', 'carlsberg'],
   'moretti': ['birra moretti', 'moretti'],
@@ -201,16 +181,13 @@ var brandAliases = {
   'budweiser': ['budweiser', 'bud'],
   'amstel': ['amstel'],
   'coors': ['coors'],
-  'birra moretti': ['birra moretti', 'moretti'],
   'wainwright': ['wainwright', 'wain'],
   'hobgoblin': ['hobgoblin'],
   'thwaites': ['thwaites', 'thw'],
   'camden': ['camden'],
   'neck oil': ['neck oil'],
-  'old speckled hen': ['old speckled hen', 'old spec hen'],
   'london pride': ['london pride'],
   'ghost ship': ['ghost ship'],
-  'doom': ['doom bar'],
   'landlord': ['landlord'],
   'tribute': ['tribute'],
   'proper job': ['proper job'],
@@ -220,12 +197,11 @@ var brandAliases = {
   'old mout': ['old mout'],
   'somersby': ['somersby'],
   'pepsi': ['pepsi'],
-  'coca cola': ['coca cola', 'coke'],
   'coke': ['coca cola', 'coke'],
+  'coca cola': ['coca cola', 'coke'],
   'fentimans': ['fentimans', 'fent'],
   'red bull': ['red bull'],
-  'j2o': ['j2o'],
-  'fever tree': ['fever tree', 'fevt', 'fev t'],
+  'fever tree': ['fever tree', 'fevt'],
   'britvic': ['britvic', 'brit'],
   'smirnoff': ['smirnoff', 'smir'],
   'gordons': ['gordons', 'gordon'],
@@ -237,17 +213,12 @@ var brandAliases = {
   'baileys': ['baileys'],
   'malibu': ['malibu'],
   'prosecco': ['prosecco'],
-  'champagne': ['champagne', 'champ'],
   'merlot': ['merlot'],
   'sauvignon': ['sauvignon', 'sauv'],
   'pinot': ['pinot'],
   'chardonnay': ['chardonnay', 'chard'],
   'rioja': ['rioja'],
-  'malbec': ['malbec'],
-  'rose': ['rose', 'rosato', 'rosado'],
-  'keg': ['keg'],
-  'cask': ['cask', 'csk'],
-  'bottle': ['bot', 'bottle']
+  'malbec': ['malbec']
 };
 
 client.on('app.registered', function() {
@@ -320,7 +291,7 @@ function validateAccount() {
       lookupDepotName(validatedAccount.assigned_depot, function(depotName) {
         validatedAccount.depot_name = depotName;
         showAccountConfirmed(validatedAccount);
-        loadProducts(validatedAccount.assigned_depot);
+        loadProducts();
       });
     } else {
       showAccountStatus('error', 'Account not found. Please check and try again or contact your Sales Development Manager.');
@@ -380,34 +351,9 @@ function changeAccount() {
   renderOrder();
 }
 
-function loadProducts(depotId) {
+function loadProducts() {
   document.getElementById('product-section').style.display = 'block';
   showLoading(true);
-
-  var depotCode = depotCodeMap[depotId] || '';
-  if (!depotCode) {
-    showLoading(false);
-    showStatus('Depot not recognised. Please call 0800 587 0773 for help.', true);
-    return;
-  }
-
-  var availableProductIds = [];
-
-  function fetchDepotProducts(url) {
-    return client.request({ url: url, type: 'GET' }).then(function(data) {
-      var records = data.custom_object_records || [];
-      records.forEach(function(r) {
-        if (r.custom_object_fields.available === true) {
-          availableProductIds.push(r.custom_object_fields.product);
-        }
-      });
-      if (data.meta && data.meta.has_more && data.links && data.links.next) {
-        var nextUrl = data.links.next.replace('https://carlsbergmarstons.zendesk.com', '');
-        return fetchDepotProducts(nextUrl);
-      }
-      return Promise.resolve();
-    });
-  }
 
   function fetchAllProducts(url, collected) {
     collected = collected || [];
@@ -422,14 +368,8 @@ function loadProducts(depotId) {
     });
   }
 
-  var depotSearchUrl = '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotCode) + '&page[size]=100';
-
-  fetchDepotProducts(depotSearchUrl).then(function() {
-    return fetchAllProducts('/api/v2/custom_objects/cb_product/records?page[size]=100');
-  }).then(function(allRecords) {
-    allProducts = allRecords.filter(function(p) {
-      return availableProductIds.indexOf(p.id) !== -1;
-    }).map(function(p) {
+  fetchAllProducts('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords) {
+    allProducts = allRecords.map(function(p) {
       return {
         id: p.id,
         name: p.custom_object_fields.name || '',
@@ -445,12 +385,7 @@ function loadProducts(depotId) {
     showLoading(false);
     document.getElementById('order-section').style.display = 'block';
     renderOrder();
-
-    if (allProducts.length === 0) {
-      showStatus('No products available for your depot. Call 0800 587 0773 for help.', true);
-    } else {
-      showStatus(allProducts.length + ' products available at your depot', false);
-    }
+    showStatus(allProducts.length + ' products available', false);
   }).catch(function() {
     showLoading(false);
     document.getElementById('order-section').style.display = 'block';
@@ -461,9 +396,7 @@ function loadProducts(depotId) {
 function getSearchTerms(query) {
   var terms = [query];
   var aliases = brandAliases[query];
-  if (aliases) {
-    terms = terms.concat(aliases);
-  }
+  if (aliases) { terms = terms.concat(aliases); }
   Object.keys(brandAliases).forEach(function(key) {
     if (query.indexOf(key) !== -1 || key.indexOf(query) !== -1) {
       terms = terms.concat(brandAliases[key]);
@@ -527,8 +460,7 @@ function renderDropdown(results) {
     dd.innerHTML = results.slice(0, 30).map(function(p) {
       return '<div class="dropdown-item" data-id="' + esc(p.id) + '">' +
         '<div class="di-name">' + esc(p.name) + '</div>' +
-        '<div class="di-meta">' + (p.brand ? esc(p.brand) + ' - ' : '') + esc(p.pack_size || '') + '</div>' +
-        '<div class="di-sku">SKU: ' + esc(p.sku) + '</div>' +
+        '<div class="di-meta">' + esc(p.pack_size || '') + '</div>' +
         '</div>';
     }).join('');
     dd.querySelectorAll('.dropdown-item').forEach(function(item) {
@@ -551,10 +483,7 @@ function selectProduct(id) {
   closeDropdown();
   document.getElementById('search-input').value = product.name;
   document.getElementById('sel-name').textContent = product.name;
-  document.getElementById('sel-meta').textContent =
-    (product.brand ? product.brand + ' - ' : '') +
-    (product.pack_size || '') +
-    (product.sku ? ' - SKU: ' + product.sku : '');
+  document.getElementById('sel-meta').textContent = product.pack_size || '';
   document.getElementById('qty-input').value = 1;
   document.getElementById('add-row').classList.add('visible');
   document.getElementById('qty-input').focus();
@@ -603,8 +532,7 @@ function renderOrder() {
     return '<div class="order-item">' +
       '<div class="oi-info">' +
         '<div class="oi-name">' + esc(item.name) + '</div>' +
-        '<div class="oi-meta">' + (item.brand ? esc(item.brand) + ' - ' : '') + esc(item.pack_size || '') + '</div>' +
-        '<div class="oi-sku">SKU: ' + esc(item.sku || 'N/A') + '</div>' +
+        '<div class="oi-meta">' + esc(item.pack_size || '') + '</div>' +
       '</div>' +
       '<div class="oi-qty-wrap">' +
         '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="-1">-</button>' +
@@ -641,21 +569,25 @@ function removeItem(idx) {
 
 function updateTicketField() {
   if (orderItems.length === 0) { client.set('ticket.comment.text', ''); return; }
-  var accountInfo = validatedAccount ? (
-    'Account number: ' + (validatedAccount.account_number || '') + '\n' +
-    'Venue: ' + (validatedAccount.name || '') + '\n' +
-    'Delivery address: ' + (validatedAccount.deliveryaddressline1 || '') +
-      (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') +
-      (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '') + '\n\n'
+
+  var venueName = validatedAccount ? (validatedAccount.name || '') : '';
+  var accountNumber = validatedAccount ? (validatedAccount.account_number || '') : '';
+  var address = validatedAccount ? (
+    (validatedAccount.deliveryaddressline1 || '') +
+    (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') +
+    (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '')
   ) : '';
-  var lines = orderItems.map(function(item) {
-    return item.qty + ' x ' + item.name + (item.pack_size ? ' (' + item.pack_size + ')' : '') + ' - SKU: ' + (item.sku || 'N/A');
+  var depotName = validatedAccount ? (validatedAccount.depot_name || '') : '';
+
+  var bulletLines = orderItems.map(function(item) {
+    return '- ' + item.name + (item.pack_size ? ' (' + item.pack_size + ')' : '') + ' x ' + item.qty;
   }).join('\n');
+
   var csvHeader = 'Account_Number,Customer_Name,Delivery_Postcode,Product_SKU,Product_Name,Pack_Size,Quantity';
   var csvRows = orderItems.map(function(item) {
     return [
-      validatedAccount ? (validatedAccount.account_number || '') : '',
-      validatedAccount ? '"' + (validatedAccount.name || '') + '"' : '',
+      accountNumber,
+      '"' + venueName + '"',
       validatedAccount ? (validatedAccount.delivery_postcode || '') : '',
       item.sku || '',
       '"' + item.name + '"',
@@ -663,7 +595,28 @@ function updateTicketField() {
       item.qty
     ].join(',');
   }).join('\n');
-  client.set('ticket.comment.text', accountInfo + 'ORDER DETAILS:\n' + lines + '\n\nCSV:\n' + csvHeader + '\n' + csvRows);
+
+  var publicNote =
+    'Hi ' + venueName + ',\n\n' +
+    'Thank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n' +
+    bulletLines + '\n\n' +
+    'Delivery address: ' + address + '\n\n' +
+    'Our team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message.';
+
+  var internalNote =
+    'FAST DELIVERY ORDER - ACTION REQUIRED\n\n' +
+    'Venue: ' + venueName + '\n' +
+    'Account: ' + accountNumber + '\n' +
+    'Delivery address: ' + address + '\n' +
+    'Depot: ' + depotName + '\n\n' +
+    'Items ordered:\n' + bulletLines + '\n\n' +
+    'Next steps:\n' +
+    '1. Check availability at ' + depotName + ' depot\n' +
+    '2. Confirm payment with the credit team\n' +
+    '3. Pass to the depot planner to schedule delivery\n\n' +
+    'Upload reference:\n' + csvHeader + '\n' + csvRows;
+
+  client.set('ticket.comment.text', publicNote + '\n\n---INTERNAL---\n\n' + internalNote);
 }
 
 function esc(s) {
