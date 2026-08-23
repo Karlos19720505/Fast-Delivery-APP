@@ -66,6 +66,18 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .oi-qty { font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; }
 .oi-remove { background: none; border: none; color: #CC0000; font-size: 14px; cursor: pointer; opacity: 0.5; padding: 0 2px; }
 .oi-remove:hover { opacity: 1; }
+.confirm-section { background: #fff; margin: 8px; border-radius: 6px; border: 1px solid #EBEBEB; padding: 12px; display: none; }
+.confirm-check-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+.confirm-check-row input[type="checkbox"] { width: 16px; height: 16px; margin-top: 2px; accent-color: #00703C; cursor: pointer; flex-shrink: 0; }
+.confirm-check-label { font-size: 12px; color: #1A1A1A; line-height: 1.5; }
+.submit-btn { width: 100%; margin-top: 12px; padding: 11px; background: #AAA; color: #fff; border: none; border-radius: 5px; font-size: 13px; font-weight: 700; cursor: not-allowed; transition: background 0.2s; }
+.submit-btn.active { background: #00703C; cursor: pointer; }
+.submit-btn.active:hover { background: #005a30; }
+.submit-btn:disabled { background: #AAA; cursor: not-allowed; }
+.confirmation-screen { display: none; background: #fff; margin: 8px; border-radius: 6px; border: 1px solid #B3DEC8; padding: 20px; text-align: center; }
+.confirmation-icon { width: 48px; height: 48px; background: #00703C; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; font-weight: 700; margin: 0 auto 12px; }
+.confirmation-title { font-size: 15px; font-weight: 700; color: #00703C; margin-bottom: 8px; }
+.confirmation-msg { font-size: 12px; color: #555; line-height: 1.6; }
 .status-bar { padding: 8px 12px; font-size: 12px; background: #F0F8F4; border-top: 1px solid #B3DEC8; color: #00703C; display: none; }
 .status-bar.visible { display: block; }
 .status-bar.warning { background: #FFF8E8; border-top-color: #F0D080; color: #7A5A00; }
@@ -138,6 +150,25 @@ Your order
 </div>
 <div id="order-items">
 <div class="order-empty">No products added yet.</div>
+</div>
+</div>
+
+<div class="confirm-section" id="confirm-section">
+<div class="confirm-check-row">
+<input type="checkbox" id="confirm-checkbox"/>
+<label class="confirm-check-label" for="confirm-checkbox">
+I have checked my order and confirm that the products and quantities listed above are correct and ready to be processed.
+</label>
+</div>
+<button class="submit-btn" id="submit-btn" disabled>Submit my order</button>
+</div>
+
+<div class="confirmation-screen" id="confirmation-screen">
+<div class="confirmation-icon">OK</div>
+<div class="confirmation-title">Order received</div>
+<div class="confirmation-msg">
+Thank you. Your Fast Delivery order has been received and is being processed by our team.<br><br>
+You will receive a confirmation email shortly. If you need to make any changes or have any questions, please reply to that email or call us on <strong>0800 587 0773</strong>.
 </div>
 </div>
 
@@ -254,6 +285,21 @@ document.getElementById('search-input').addEventListener('focus', function() {
   onSearchFocus();
 });
 
+document.getElementById('confirm-checkbox').addEventListener('change', function() {
+  var btn = document.getElementById('submit-btn');
+  if (this.checked && orderItems.length > 0) {
+    btn.disabled = false;
+    btn.classList.add('active');
+  } else {
+    btn.disabled = true;
+    btn.classList.remove('active');
+  }
+});
+
+document.getElementById('submit-btn').addEventListener('click', function() {
+  if (!this.disabled) submitOrder();
+});
+
 document.querySelectorAll('.tab').forEach(function(tab) {
   tab.addEventListener('click', function() { setTab(tab); });
 });
@@ -347,7 +393,12 @@ function changeAccount() {
   document.getElementById('validate-btn').disabled = false;
   document.getElementById('product-section').style.display = 'none';
   document.getElementById('order-section').style.display = 'none';
+  document.getElementById('confirm-section').style.display = 'none';
+  document.getElementById('confirmation-screen').style.display = 'none';
   document.getElementById('status-bar').className = 'status-bar';
+  document.getElementById('confirm-checkbox').checked = false;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').classList.remove('active');
   renderOrder();
 }
 
@@ -533,10 +584,16 @@ function renderOrder() {
   var container = document.getElementById('order-items');
   var count = document.getElementById('order-count');
   count.textContent = orderItems.length;
+
   if (orderItems.length === 0) {
     container.innerHTML = '<div class="order-empty">No products added yet. Search above to add items.</div>';
+    document.getElementById('confirm-section').style.display = 'none';
+    document.getElementById('confirm-checkbox').checked = false;
+    document.getElementById('submit-btn').disabled = true;
+    document.getElementById('submit-btn').classList.remove('active');
     return;
   }
+
   container.innerHTML = orderItems.map(function(item, idx) {
     return '<div class="order-item">' +
       '<div class="oi-info">' +
@@ -551,6 +608,7 @@ function renderOrder() {
       '<button class="oi-remove" data-idx="' + idx + '">X</button>' +
     '</div>';
   }).join('');
+
   container.querySelectorAll('.oi-qty-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
       changeQty(parseInt(btn.getAttribute('data-idx')), parseInt(btn.getAttribute('data-delta')));
@@ -561,6 +619,8 @@ function renderOrder() {
       removeItem(parseInt(btn.getAttribute('data-idx')));
     });
   });
+
+  document.getElementById('confirm-section').style.display = 'block';
 }
 
 function changeQty(idx, delta) {
@@ -568,12 +628,38 @@ function changeQty(idx, delta) {
   if (orderItems[idx].qty <= 0) orderItems.splice(idx, 1);
   renderOrder();
   updateTicketField();
+  var cb = document.getElementById('confirm-checkbox');
+  cb.checked = false;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').classList.remove('active');
 }
 
 function removeItem(idx) {
   orderItems.splice(idx, 1);
   renderOrder();
   updateTicketField();
+  var cb = document.getElementById('confirm-checkbox');
+  cb.checked = false;
+  document.getElementById('submit-btn').disabled = true;
+  document.getElementById('submit-btn').classList.remove('active');
+}
+
+function submitOrder() {
+  var btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.classList.remove('active');
+  btn.textContent = 'Submitting...';
+
+  updateTicketField();
+
+  setTimeout(function() {
+    document.getElementById('product-section').style.display = 'none';
+    document.getElementById('order-section').style.display = 'none';
+    document.getElementById('confirm-section').style.display = 'none';
+    document.getElementById('account-panel').style.display = 'none';
+    document.getElementById('confirmation-screen').style.display = 'block';
+    document.getElementById('status-bar').className = 'status-bar';
+  }, 800);
 }
 
 function updateTicketField() {
