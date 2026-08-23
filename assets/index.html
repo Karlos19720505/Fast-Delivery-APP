@@ -1,3 +1,5 @@
+assets/index.html:
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -84,8 +86,8 @@ Fast Delivery - Product Selector
 <div class="account-panel" id="account-panel">
 <div class="account-panel-title">Step 1 - Confirm your account</div>
 <div class="account-input-row">
-<input type="text" id="account-input" placeholder="Enter your account number..." onkeydown="if(event.key==='Enter')validateAccount()"/>
-<button class="validate-btn" id="validate-btn" onclick="validateAccount()"><span id="confirm-btn-text">Confirm my account</span></button>
+<input type="text" id="account-input" placeholder="Enter your account number..."/>
+<button class="validate-btn" id="validate-btn"><span id="confirm-btn-text">Confirm my account</span></button>
 </div>
 <div class="account-status" id="account-status"></div>
 <div class="account-confirmed" id="account-confirmed">
@@ -97,22 +99,22 @@ Fast Delivery - Product Selector
 <div class="confirmed-address" id="confirmed-address"></div>
 </div>
 </div>
-<button class="change-account" onclick="changeAccount()">Change account</button>
+<button class="change-account" id="change-account-btn">Change account</button>
 </div>
 </div>
 <div id="product-section" style="display:none;">
 <div class="tabs">
-<div class="tab active" data-cat="all" onclick="setTab(this)">All</div>
-<div class="tab" data-cat="beer" onclick="setTab(this)">Beer</div>
-<div class="tab" data-cat="cider" onclick="setTab(this)">Cider</div>
-<div class="tab" data-cat="wine" onclick="setTab(this)">Wine</div>
-<div class="tab" data-cat="spirits" onclick="setTab(this)">Spirits</div>
-<div class="tab" data-cat="soft_drink" onclick="setTab(this)">Softs</div>
-<div class="tab" data-cat="other" onclick="setTab(this)">Other</div>
+<div class="tab active" data-cat="all" id="tab-all">All</div>
+<div class="tab" data-cat="beer" id="tab-beer">Beer</div>
+<div class="tab" data-cat="cider" id="tab-cider">Cider</div>
+<div class="tab" data-cat="wine" id="tab-wine">Wine</div>
+<div class="tab" data-cat="spirits" id="tab-spirits">Spirits</div>
+<div class="tab" data-cat="soft_drink" id="tab-softs">Softs</div>
+<div class="tab" data-cat="other" id="tab-other">Other</div>
 </div>
 <div class="search-area">
 <div class="search-wrap" id="search-wrap">
-<input type="text" id="search-input" placeholder="Type to search products..." autocomplete="off" oninput="onSearch()" onfocus="onSearchFocus()"/>
+<input type="text" id="search-input" placeholder="Type to search products..." autocomplete="off"/>
 <div class="dropdown" id="dropdown"></div>
 </div>
 <div class="add-row" id="add-row">
@@ -121,8 +123,8 @@ Fast Delivery - Product Selector
 <div class="sel-meta" id="sel-meta"></div>
 </div>
 <input type="number" class="qty-input" id="qty-input" value="1" min="1" max="999"/>
-<button class="add-item-btn" onclick="confirmAdd()">Add</button>
-<button class="cancel-btn" onclick="cancelAdd()">Cancel</button>
+<button class="add-item-btn" id="add-item-btn">Add</button>
+<button class="cancel-btn" id="cancel-btn">Cancel</button>
 </div>
 </div>
 <div class="loading-state" id="loading-state">
@@ -143,3 +145,458 @@ Your order
 <script src="app.js"></script>
 </body>
 </html>
+And here is the complete updated assets/app.js with all event listeners moved out of inline HTML:
+
+var client = ZAFClient.init();
+var allProducts = [];
+var orderItems = [];
+var activeCategory = 'all';
+var selectedProduct = null;
+var searchTimeout = null;
+var accountValidated = false;
+var validatedAccount = null;
+
+var categoryMap = {
+  'all': null,
+  'beer': ['draught', 'cask', 'packaged'],
+  'cider': ['cider'],
+  'wine': ['wine'],
+  'spirits': ['spirits'],
+  'soft_drink': ['soft_drink'],
+  'other': ['other', 'snack']
+};
+
+client.on('app.registered', function() {
+  client.invoke('resize', { width: '100%', height: '600px' });
+  bindEvents();
+  autoFillAccountNumber();
+});
+
+function bindEvents() {
+  document.getElementById('validate-btn').addEventListener('click', function() {
+    validateAccount();
+  });
+  document.getElementById('account-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') validateAccount();
+  });
+  document.getElementById('change-account-btn').addEventListener('click', function() {
+    changeAccount();
+  });
+  document.getElementById('add-item-btn').addEventListener('click', function() {
+    confirmAdd();
+  });
+  document.getElementById('cancel-btn').addEventListener('click', function() {
+    cancelAdd();
+  });
+  document.getElementById('search-input').addEventListener('input', function() {
+    onSearch();
+  });
+  document.getElementById('search-input').addEventListener('focus', function() {
+    onSearchFocus();
+  });
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      setTab(tab);
+    });
+  });
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('search-wrap').contains(e.target)) {
+      closeDropdown();
+    }
+  });
+}
+
+function autoFillAccountNumber() {
+  try {
+    var params = new URLSearchParams(window.location.search);
+    var accountFromUrl = params.get('account_number');
+    if (accountFromUrl) {
+      document.getElementById('account-input').value = accountFromUrl;
+      document.getElementById('confirm-btn-text').textContent = 'Yes, this is correct';
+    }
+  } catch (e) {}
+
+  client.get('window.location').then(function(data) {
+    try {
+      var url = data['window.location'].href || '';
+      var match = url.match(/account_number=([^&]+)/);
+      if (match && match[1]) {
+        document.getElementById('account-input').value = decodeURIComponent(match[1]);
+        document.getElementById('confirm-btn-text').textContent = 'Yes, this is correct';
+      }
+    } catch (e) {}
+  }).catch(function() {});
+}
+
+function validateAccount() {
+  var accountNumber = document.getElementById('account-input').value.trim();
+  if (!accountNumber) {
+    showAccountStatus('error', 'Please enter your account number. You can find this on your Carlsberg Britvic invoice or by contacting your Sales Development Manager.');
+    return;
+  }
+  showAccountStatus('loading', 'Looking up your account...');
+  document.getElementById('validate-btn').disabled = true;
+
+  client.request({
+    url: '/api/v2/custom_objects/fdcustomeraccount/records/search?query=' + encodeURIComponent(accountNumber),
+    type: 'GET'
+  }).then(function(data) {
+    var records = data.custom_object_records || [];
+    var match = null;
+    records.forEach(function(r) {
+      if (r.custom_object_fields.account_number === accountNumber) {
+        match = r;
+      }
+    });
+    if (match) {
+      validatedAccount = match.custom_object_fields;
+      validatedAccount.record_id = match.id;
+      accountValidated = true;
+      lookupDepotName(validatedAccount.assigned_depot, function(depotName) {
+        validatedAccount.depot_name = depotName;
+        showAccountConfirmed(validatedAccount);
+        loadProducts(validatedAccount.assigned_depot);
+      });
+    } else {
+      showAccountStatus('error', 'We could not find an account with that number. Please check and try again, or contact your Sales Development Manager for help.');
+      document.getElementById('validate-btn').disabled = false;
+    }
+  }).catch(function() {
+    showAccountStatus('error', 'Something went wrong looking up your account. Please try again or call us on 0800 587 0773.');
+    document.getElementById('validate-btn').disabled = false;
+  });
+}
+
+function lookupDepotName(depotId, callback) {
+  if (!depotId) { callback('Your depot'); return; }
+  client.request({
+    url: '/api/v2/custom_objects/cbdepotv2/records/' + depotId,
+    type: 'GET'
+  }).then(function(data) {
+    var name = data.custom_object_record.name || 'Your depot';
+    callback(name);
+  }).catch(function() {
+    callback('Your depot');
+  });
+}
+
+function showAccountConfirmed(account) {
+  document.getElementById('account-status').style.display = 'none';
+  document.getElementById('account-confirmed').style.display = 'block';
+  document.getElementById('confirmed-name').textContent = account.name || 'Your venue';
+  document.getElementById('confirmed-depot').textContent = account.depot_name || 'Your depot';
+  document.getElementById('confirmed-address').textContent =
+    (account.deliveryaddressline1 || '') +
+    (account.delivery_city ? ', ' + account.delivery_city : '') +
+    (account.delivery_postcode ? ', ' + account.delivery_postcode : '');
+  document.getElementById('account-panel').style.background = '#F0F8F4';
+  document.getElementById('account-panel').style.borderColor = '#B3DEC8';
+  client.set('ticket.subject', 'Fast Delivery Order - ' + (account.name || account.account_number));
+}
+
+function showAccountStatus(type, msg) {
+  var el = document.getElementById('account-status');
+  el.style.display = 'block';
+  el.className = 'account-status ' + type;
+  el.textContent = msg;
+}
+
+function changeAccount() {
+  accountValidated = false;
+  validatedAccount = null;
+  allProducts = [];
+  orderItems = [];
+  document.getElementById('account-input').value = '';
+  document.getElementById('account-confirmed').style.display = 'none';
+  document.getElementById('account-status').style.display = 'none';
+  document.getElementById('account-panel').style.background = '#fff';
+  document.getElementById('account-panel').style.borderColor = '#EBEBEB';
+  document.getElementById('validate-btn').disabled = false;
+  document.getElementById('confirm-btn-text').textContent = 'Confirm my account';
+  document.getElementById('product-section').style.display = 'none';
+  document.getElementById('order-section').style.display = 'none';
+  document.getElementById('status-bar').className = 'status-bar';
+  renderOrder();
+}
+
+function loadProducts(depotId) {
+  document.getElementById('product-section').style.display = 'block';
+  showLoading(true);
+
+  client.request({
+    url: '/api/v2/custom_objects/fddepotproduct/records?page[size]=100',
+    type: 'GET'
+  }).then(function(depotData) {
+    var depotRecords = depotData.custom_object_records || [];
+    var availableProductIds = [];
+    depotRecords.forEach(function(r) {
+      var f = r.custom_object_fields;
+      if (f.available === true && (!depotId || f.depot === depotId)) {
+        availableProductIds.push(f.product);
+      }
+    });
+
+    return client.request({
+      url: '/api/v2/custom_objects/cb_product/records?page[size]=100',
+      type: 'GET'
+    }).then(function(productData) {
+      var allRecords = productData.custom_object_records || [];
+      allProducts = allRecords.filter(function(p) {
+        return availableProductIds.indexOf(p.id) !== -1;
+      }).map(function(p) {
+        return {
+          id: p.id,
+          name: p.custom_object_fields.name || '',
+          sku: p.custom_object_fields.sku || '',
+          brand: p.custom_object_fields.brand || '',
+          category: p.custom_object_fields.category || 'other',
+          pack_size: p.custom_object_fields.pack_size || '',
+          unit_of_measure: p.custom_object_fields.unit_of_measure || '',
+          search_keywords: p.custom_object_fields.search_keywords || ''
+        };
+      });
+
+      showLoading(false);
+      document.getElementById('order-section').style.display = 'block';
+      renderOrder();
+
+      if (allProducts.length === 0) {
+        showStatus('No products are currently available for your depot. Please contact your Sales Development Manager or call 0800 587 0773.', true);
+      } else {
+        showStatus(allProducts.length + ' products available at your depot', false);
+      }
+    });
+  }).catch(function() {
+    showLoading(false);
+    document.getElementById('order-section').style.display = 'block';
+    showStatus('Could not load products. Please refresh the page or call 0800 587 0773.', true);
+  });
+}
+
+function setTab(el) {
+  document.querySelectorAll('.tab').forEach(function(t) {
+    t.classList.remove('active');
+  });
+  el.classList.add('active');
+  activeCategory = el.getAttribute('data-cat');
+  var input = document.getElementById('search-input');
+  if (input.value.trim().length > 0) {
+    onSearch();
+  } else {
+    closeDropdown();
+  }
+}
+
+function onSearch() {
+  if (!accountValidated) return;
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(function() {
+    var query = document.getElementById('search-input').value.trim().toLowerCase();
+    if (query.length < 1) {
+      closeDropdown();
+      cancelAdd();
+      return;
+    }
+    var cats = categoryMap[activeCategory];
+    var results = allProducts.filter(function(p) {
+      var matchText =
+        p.name.toLowerCase().indexOf(query) !== -1 ||
+        p.sku.toLowerCase().indexOf(query) !== -1 ||
+        p.brand.toLowerCase().indexOf(query) !== -1 ||
+        p.pack_size.toLowerCase().indexOf(query) !== -1 ||
+        (p.search_keywords && p.search_keywords.toLowerCase().indexOf(query) !== -1);
+      var matchCat = !cats || cats.indexOf(p.category) !== -1;
+      return matchText && matchCat;
+    });
+    renderDropdown(results);
+  }, 180);
+}
+
+function onSearchFocus() {
+  var query = document.getElementById('search-input').value.trim();
+  if (query.length > 0) onSearch();
+}
+
+function renderDropdown(results) {
+  var dd = document.getElementById('dropdown');
+  if (results.length === 0) {
+    dd.innerHTML = '<div class="dropdown-empty">No products found. Try a different search.</div>';
+  } else {
+    dd.innerHTML = results.slice(0, 30).map(function(p) {
+      return '<div class="dropdown-item" data-id="' + esc(p.id) + '">' +
+        '<div class="di-name">' + esc(p.name) + '</div>' +
+        '<div class="di-meta">' + (p.brand ? esc(p.brand) + ' - ' : '') + (p.pack_size ? esc(p.pack_size) : '') + '</div>' +
+        '<div class="di-sku">SKU: ' + esc(p.sku) + '</div>' +
+        '</div>';
+    }).join('');
+    dd.querySelectorAll('.dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        selectProduct(item.getAttribute('data-id'));
+      });
+    });
+  }
+  dd.classList.add('open');
+}
+
+function closeDropdown() {
+  document.getElementById('dropdown').classList.remove('open');
+}
+
+function selectProduct(id) {
+  var product = allProducts.find(function(p) { return p.id === id; });
+  if (!product) return;
+  selectedProduct = product;
+  closeDropdown();
+  document.getElementById('search-input').value = product.name;
+  document.getElementById('sel-name').textContent = product.name;
+  document.getElementById('sel-meta').textContent =
+    (product.brand ? product.brand + ' - ' : '') +
+    (product.pack_size || '') +
+    (product.sku ? ' - SKU: ' + product.sku : '');
+  document.getElementById('qty-input').value = 1;
+  document.getElementById('add-row').classList.add('visible');
+  document.getElementById('qty-input').focus();
+}
+
+function confirmAdd() {
+  if (!selectedProduct) return;
+  var qty = parseInt(document.getElementById('qty-input').value, 10);
+  if (!qty || qty < 1) {
+    document.getElementById('qty-input').focus();
+    return;
+  }
+  var existing = orderItems.find(function(i) { return i.id === selectedProduct.id; });
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    orderItems.push({
+      id: selectedProduct.id,
+      name: selectedProduct.name,
+      sku: selectedProduct.sku,
+      brand: selectedProduct.brand,
+      pack_size: selectedProduct.pack_size,
+      unit_of_measure: selectedProduct.unit_of_measure,
+      qty: qty
+    });
+  }
+  renderOrder();
+  updateTicketField();
+  cancelAdd();
+  showStatus(selectedProduct.name + ' added to your order', false);
+}
+
+function cancelAdd() {
+  selectedProduct = null;
+  document.getElementById('add-row').classList.remove('visible');
+  document.getElementById('search-input').value = '';
+  closeDropdown();
+}
+
+function renderOrder() {
+  var container = document.getElementById('order-items');
+  var count = document.getElementById('order-count');
+  count.textContent = orderItems.length;
+  if (orderItems.length === 0) {
+    container.innerHTML = '<div class="order-empty">No products added yet. Search above to add items.</div>';
+    return;
+  }
+  container.innerHTML = orderItems.map(function(item, idx) {
+    return '<div class="order-item">' +
+      '<div class="oi-info">' +
+        '<div class="oi-name">' + esc(item.name) + '</div>' +
+        '<div class="oi-meta">' + (item.brand ? esc(item.brand) + ' - ' : '') + esc(item.pack_size || '') + '</div>' +
+        '<div class="oi-sku">SKU: ' + esc(item.sku || 'N/A') + '</div>' +
+      '</div>' +
+      '<div class="oi-qty-wrap">' +
+        '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="-1">-</button>' +
+        '<span class="oi-qty">' + item.qty + '</span>' +
+        '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="1">+</button>' +
+      '</div>' +
+      '<button class="oi-remove" data-idx="' + idx + '">X</button>' +
+    '</div>';
+  }).join('');
+
+  container.querySelectorAll('.oi-qty-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      changeQty(parseInt(btn.getAttribute('data-idx')), parseInt(btn.getAttribute('data-delta')));
+    });
+  });
+  container.querySelectorAll('.oi-remove').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      removeItem(parseInt(btn.getAttribute('data-idx')));
+    });
+  });
+}
+
+function changeQty(idx, delta) {
+  orderItems[idx].qty += delta;
+  if (orderItems[idx].qty <= 0) orderItems.splice(idx, 1);
+  renderOrder();
+  updateTicketField();
+}
+
+function removeItem(idx) {
+  orderItems.splice(idx, 1);
+  renderOrder();
+  updateTicketField();
+}
+
+function updateTicketField() {
+  if (orderItems.length === 0) {
+    client.set('ticket.comment.text', '');
+    return;
+  }
+  var accountInfo = validatedAccount ? (
+    'Account number: ' + (validatedAccount.account_number || '') + '\n' +
+    'Venue: ' + (validatedAccount.name || '') + '\n' +
+    'Delivery address: ' + (validatedAccount.deliveryaddressline1 || '') +
+      (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') +
+      (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '') + '\n\n'
+  ) : '';
+
+  var lines = orderItems.map(function(item) {
+    return item.qty + ' x ' + item.name +
+      (item.pack_size ? ' (' + item.pack_size + ')' : '') +
+      ' - SKU: ' + (item.sku || 'N/A');
+  }).join('\n');
+
+  var csvHeader = 'Account_Number,Customer_Name,Delivery_Postcode,Product_SKU,Product_Name,Pack_Size,Quantity';
+  var csvRows = orderItems.map(function(item) {
+    return [
+      validatedAccount ? (validatedAccount.account_number || '') : '',
+      validatedAccount ? '"' + (validatedAccount.name || '') + '"' : '',
+      validatedAccount ? (validatedAccount.delivery_postcode || '') : '',
+      item.sku || '',
+      '"' + item.name + '"',
+      '"' + (item.pack_size || '') + '"',
+      item.qty
+    ].join(',');
+  }).join('\n');
+
+  var output = accountInfo + 'ORDER DETAILS:\n' + lines + '\n\nCSV:\n' + csvHeader + '\n' + csvRows;
+  client.set('ticket.comment.text', output);
+}
+
+function esc(s) {
+  return (s || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function showLoading(show) {
+  document.getElementById('loading-state').style.display = show ? 'block' : 'none';
+}
+
+function showStatus(msg, isWarning) {
+  var bar = document.getElementById('status-bar');
+  bar.innerHTML = msg;
+  bar.className = 'status-bar visible' + (isWarning ? ' warning' : '');
+  if (!isWarning) {
+    setTimeout(function() {
+      bar.className = 'status-bar';
+    }, 4000);
+  }
+}
