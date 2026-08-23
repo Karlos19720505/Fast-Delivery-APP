@@ -19,8 +19,43 @@ var categoryMap = {
 
 client.on('app.registered', function() {
   client.invoke('resize', { width: '100%', height: '600px' });
+  bindEvents();
   autoFillAccountNumber();
 });
+
+function bindEvents() {
+  document.getElementById('validate-btn').addEventListener('click', function() {
+    validateAccount();
+  });
+  document.getElementById('account-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') validateAccount();
+  });
+  document.getElementById('change-account-btn').addEventListener('click', function() {
+    changeAccount();
+  });
+  document.getElementById('add-item-btn').addEventListener('click', function() {
+    confirmAdd();
+  });
+  document.getElementById('cancel-btn').addEventListener('click', function() {
+    cancelAdd();
+  });
+  document.getElementById('search-input').addEventListener('input', function() {
+    onSearch();
+  });
+  document.getElementById('search-input').addEventListener('focus', function() {
+    onSearchFocus();
+  });
+  document.querySelectorAll('.tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      setTab(tab);
+    });
+  });
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('search-wrap').contains(e.target)) {
+      closeDropdown();
+    }
+  });
+}
 
 function autoFillAccountNumber() {
   try {
@@ -68,8 +103,11 @@ function validateAccount() {
       validatedAccount = match.custom_object_fields;
       validatedAccount.record_id = match.id;
       accountValidated = true;
-      showAccountConfirmed(validatedAccount);
-      loadProducts();
+      lookupDepotName(validatedAccount.assigned_depot, function(depotName) {
+        validatedAccount.depot_name = depotName;
+        showAccountConfirmed(validatedAccount);
+        loadProducts(validatedAccount.assigned_depot);
+      });
     } else {
       showAccountStatus('error', 'We could not find an account with that number. Please check and try again, or contact your Sales Development Manager for help.');
       document.getElementById('validate-btn').disabled = false;
@@ -80,13 +118,26 @@ function validateAccount() {
   });
 }
 
+function lookupDepotName(depotId, callback) {
+  if (!depotId) { callback('Your depot'); return; }
+  client.request({
+    url: '/api/v2/custom_objects/cbdepotv2/records/' + depotId,
+    type: 'GET'
+  }).then(function(data) {
+    var name = data.custom_object_record.name || 'Your depot';
+    callback(name);
+  }).catch(function() {
+    callback('Your depot');
+  });
+}
+
 function showAccountConfirmed(account) {
   document.getElementById('account-status').style.display = 'none';
   document.getElementById('account-confirmed').style.display = 'block';
   document.getElementById('confirmed-name').textContent = account.name || 'Your venue';
-  document.getElementById('confirmed-depot').textContent = account.assigned_depot || '';
+  document.getElementById('confirmed-depot').textContent = account.depot_name || 'Your depot';
   document.getElementById('confirmed-address').textContent =
-    (account.delivery_address_line1 || '') +
+    (account.deliveryaddressline1 || '') +
     (account.delivery_city ? ', ' + account.delivery_city : '') +
     (account.delivery_postcode ? ', ' + account.delivery_postcode : '');
   document.getElementById('account-panel').style.background = '#F0F8F4';
@@ -119,7 +170,7 @@ function changeAccount() {
   renderOrder();
 }
 
-function loadProducts() {
+function loadProducts(depotId) {
   document.getElementById('product-section').style.display = 'block';
   showLoading(true);
 
@@ -130,8 +181,9 @@ function loadProducts() {
     var depotRecords = depotData.custom_object_records || [];
     var availableProductIds = [];
     depotRecords.forEach(function(r) {
-      if (r.custom_object_fields.available === true) {
-        availableProductIds.push(r.custom_object_fields.product);
+      var f = r.custom_object_fields;
+      if (f.available === true && (!depotId || f.depot === depotId)) {
+        availableProductIds.push(f.product);
       }
     });
 
@@ -222,12 +274,17 @@ function renderDropdown(results) {
     dd.innerHTML = '<div class="dropdown-empty">No products found. Try a different search.</div>';
   } else {
     dd.innerHTML = results.slice(0, 30).map(function(p) {
-      return '<div class="dropdown-item" onclick="selectProduct(\'' + esc(p.id) + '\')">' +
+      return '<div class="dropdown-item" data-id="' + esc(p.id) + '">' +
         '<div class="di-name">' + esc(p.name) + '</div>' +
         '<div class="di-meta">' + (p.brand ? esc(p.brand) + ' - ' : '') + (p.pack_size ? esc(p.pack_size) : '') + '</div>' +
         '<div class="di-sku">SKU: ' + esc(p.sku) + '</div>' +
         '</div>';
     }).join('');
+    dd.querySelectorAll('.dropdown-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        selectProduct(item.getAttribute('data-id'));
+      });
+    });
   }
   dd.classList.add('open');
 }
@@ -302,13 +359,24 @@ function renderOrder() {
         '<div class="oi-sku">SKU: ' + esc(item.sku || 'N/A') + '</div>' +
       '</div>' +
       '<div class="oi-qty-wrap">' +
-        '<button class="oi-qty-btn" onclick="changeQty(' + idx + ',-1)">-</button>' +
+        '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="-1">-</button>' +
         '<span class="oi-qty">' + item.qty + '</span>' +
-        '<button class="oi-qty-btn" onclick="changeQty(' + idx + ',1)">+</button>' +
+        '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="1">+</button>' +
       '</div>' +
-      '<button class="oi-remove" onclick="removeItem(' + idx + ')">X</button>' +
+      '<button class="oi-remove" data-idx="' + idx + '">X</button>' +
     '</div>';
   }).join('');
+
+  container.querySelectorAll('.oi-qty-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      changeQty(parseInt(btn.getAttribute('data-idx')), parseInt(btn.getAttribute('data-delta')));
+    });
+  });
+  container.querySelectorAll('.oi-remove').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      removeItem(parseInt(btn.getAttribute('data-idx')));
+    });
+  });
 }
 
 function changeQty(idx, delta) {
@@ -332,7 +400,7 @@ function updateTicketField() {
   var accountInfo = validatedAccount ? (
     'Account number: ' + (validatedAccount.account_number || '') + '\n' +
     'Venue: ' + (validatedAccount.name || '') + '\n' +
-    'Delivery address: ' + (validatedAccount.delivery_address_line1 || '') +
+    'Delivery address: ' + (validatedAccount.deliveryaddressline1 || '') +
       (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') +
       (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '') + '\n\n'
   ) : '';
@@ -383,9 +451,3 @@ function showStatus(msg, isWarning) {
     }, 4000);
   }
 }
-
-document.addEventListener('click', function(e) {
-  if (!document.getElementById('search-wrap').contains(e.target)) {
-    closeDropdown();
-  }
-});
