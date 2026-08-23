@@ -218,9 +218,7 @@ document.getElementById('search-input').addEventListener('focus', function() {
 });
 
 document.querySelectorAll('.tab').forEach(function(tab) {
-  tab.addEventListener('click', function() {
-    setTab(tab);
-  });
+  tab.addEventListener('click', function() { setTab(tab); });
 });
 
 document.addEventListener('click', function(e) {
@@ -275,9 +273,7 @@ function lookupDepotName(depotId, callback) {
     type: 'GET'
   }).then(function(data) {
     callback(data.custom_object_record.name || 'Your depot');
-  }).catch(function() {
-    callback('Your depot');
-  });
+  }).catch(function() { callback('Your depot'); });
 }
 
 function showAccountConfirmed(account) {
@@ -323,55 +319,72 @@ function loadProducts(depotId) {
   showLoading(true);
 
   var depotCode = depotCodeMap[depotId] || '';
-
   if (!depotCode) {
     showLoading(false);
     showStatus('Depot not recognised. Please call 0800 587 0773 for help.', true);
     return;
   }
 
-  client.request({
-    url: '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotCode),
-    type: 'GET'
-  }).then(function(depotProductData) {
-    var depotRecords = depotProductData.custom_object_records || [];
-    var availableProductIds = [];
-    depotRecords.forEach(function(r) {
-      if (r.custom_object_fields.available === true) {
-        availableProductIds.push(r.custom_object_fields.product);
-      }
-    });
+  var availableProductIds = [];
 
-    return client.request({
-      url: '/api/v2/custom_objects/cb_product/records?page[size]=100',
-      type: 'GET'
-    }).then(function(productData) {
-      var allRecords = productData.custom_object_records || [];
-      allProducts = allRecords.filter(function(p) {
-        return availableProductIds.indexOf(p.id) !== -1;
-      }).map(function(p) {
-        return {
-          id: p.id,
-          name: p.custom_object_fields.name || '',
-          sku: p.custom_object_fields.sku || '',
-          brand: p.custom_object_fields.brand || '',
-          category: p.custom_object_fields.category || 'other',
-          pack_size: p.custom_object_fields.pack_size || '',
-          unit_of_measure: p.custom_object_fields.unit_of_measure || '',
-          search_keywords: p.custom_object_fields.search_keywords || ''
-        };
+  function fetchDepotProducts(url) {
+    return client.request({ url: url, type: 'GET' }).then(function(data) {
+      var records = data.custom_object_records || [];
+      records.forEach(function(r) {
+        if (r.custom_object_fields.available === true) {
+          availableProductIds.push(r.custom_object_fields.product);
+        }
       });
-
-      showLoading(false);
-      document.getElementById('order-section').style.display = 'block';
-      renderOrder();
-
-      if (allProducts.length === 0) {
-        showStatus('No products available for your depot. Call 0800 587 0773 for help.', true);
-      } else {
-        showStatus(allProducts.length + ' products available at your depot', false);
+      if (data.meta && data.meta.has_more && data.links && data.links.next) {
+        var nextUrl = data.links.next.replace('https://carlsbergmarstons.zendesk.com', '');
+        return fetchDepotProducts(nextUrl);
       }
+      return Promise.resolve();
     });
+  }
+
+  function fetchAllProducts(url, collected) {
+    collected = collected || [];
+    return client.request({ url: url, type: 'GET' }).then(function(data) {
+      var records = data.custom_object_records || [];
+      collected = collected.concat(records);
+      if (data.meta && data.meta.has_more && data.links && data.links.next) {
+        var nextUrl = data.links.next.replace('https://carlsbergmarstons.zendesk.com', '');
+        return fetchAllProducts(nextUrl, collected);
+      }
+      return collected;
+    });
+  }
+
+  var depotSearchUrl = '/api/v2/custom_objects/fddepotproduct/records/search?query=' + encodeURIComponent(depotCode) + '&page[size]=100';
+
+  fetchDepotProducts(depotSearchUrl).then(function() {
+    return fetchAllProducts('/api/v2/custom_objects/cb_product/records?page[size]=100');
+  }).then(function(allRecords) {
+    allProducts = allRecords.filter(function(p) {
+      return availableProductIds.indexOf(p.id) !== -1;
+    }).map(function(p) {
+      return {
+        id: p.id,
+        name: p.custom_object_fields.name || '',
+        sku: p.custom_object_fields.sku || '',
+        brand: p.custom_object_fields.brand || '',
+        category: p.custom_object_fields.category || 'other',
+        pack_size: p.custom_object_fields.pack_size || '',
+        unit_of_measure: p.custom_object_fields.unit_of_measure || '',
+        search_keywords: p.custom_object_fields.search_keywords || ''
+      };
+    });
+
+    showLoading(false);
+    document.getElementById('order-section').style.display = 'block';
+    renderOrder();
+
+    if (allProducts.length === 0) {
+      showStatus('No products available for your depot. Call 0800 587 0773 for help.', true);
+    } else {
+      showStatus(allProducts.length + ' products available at your depot', false);
+    }
   }).catch(function() {
     showLoading(false);
     document.getElementById('order-section').style.display = 'block';
