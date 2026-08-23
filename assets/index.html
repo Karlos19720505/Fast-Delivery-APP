@@ -369,17 +369,26 @@ function loadProducts() {
   }
 
   fetchAllProducts('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords) {
-    allProducts = allRecords.map(function(p) {
-      return {
+    var seenSkus = {};
+    allProducts = [];
+    allRecords.forEach(function(p) {
+      var sku = p.custom_object_fields.sku || p.id;
+      if (seenSkus[sku]) return;
+      seenSkus[sku] = true;
+      var name = p.custom_object_fields.name || '';
+      var brand = p.custom_object_fields.brand || '';
+      var pack = p.custom_object_fields.pack_size || '';
+      var displayName = name || (brand ? brand + ' ' + pack : pack) || 'Unknown product';
+      allProducts.push({
         id: p.id,
-        name: p.custom_object_fields.name || '',
-        sku: p.custom_object_fields.sku || '',
-        brand: p.custom_object_fields.brand || '',
+        name: displayName,
+        sku: sku,
+        brand: brand,
         category: p.custom_object_fields.category || 'other',
-        pack_size: p.custom_object_fields.pack_size || '',
+        pack_size: pack,
         unit_of_measure: p.custom_object_fields.unit_of_measure || '',
         search_keywords: p.custom_object_fields.search_keywords || ''
-      };
+      });
     });
 
     showLoading(false);
@@ -460,7 +469,7 @@ function renderDropdown(results) {
     dd.innerHTML = results.slice(0, 30).map(function(p) {
       return '<div class="dropdown-item" data-id="' + esc(p.id) + '">' +
         '<div class="di-name">' + esc(p.name) + '</div>' +
-        '<div class="di-meta">' + esc(p.pack_size || '') + '</div>' +
+        (p.pack_size ? '<div class="di-meta">' + esc(p.pack_size) + '</div>' : '') +
         '</div>';
     }).join('');
     dd.querySelectorAll('.dropdown-item').forEach(function(item) {
@@ -532,7 +541,7 @@ function renderOrder() {
     return '<div class="order-item">' +
       '<div class="oi-info">' +
         '<div class="oi-name">' + esc(item.name) + '</div>' +
-        '<div class="oi-meta">' + esc(item.pack_size || '') + '</div>' +
+        (item.pack_size ? '<div class="oi-meta">' + esc(item.pack_size) + '</div>' : '') +
       '</div>' +
       '<div class="oi-qty-wrap">' +
         '<button class="oi-qty-btn" data-idx="' + idx + '" data-delta="-1">-</button>' +
