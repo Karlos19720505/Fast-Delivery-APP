@@ -842,7 +842,7 @@ function submitOrder() {
     document.getElementById('order-summary-panel').style.display = 'none';
     document.getElementById('account-panel').style.display = 'none';
     document.getElementById('delivery-panel').style.display = 'none';
-   var confItems = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
+    var confItems = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
     document.getElementById('confirmation-items').textContent = confItems;
     document.getElementById('confirmation-ref').textContent = 'Reference: FD-' + Date.now().toString().slice(-6);
     document.getElementById('confirmation-screen').style.display = 'block';
