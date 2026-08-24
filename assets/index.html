@@ -61,7 +61,6 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .dropdown-item { padding: 9px 12px; cursor: pointer; border-bottom: 1px solid #F5F5F5; }
 .dropdown-item:hover { background: #F0F8F4; }
 .di-name { font-size: 13px; font-weight: 600; color: #1A1A1A; }
-.di-meta { font-size: 11px; color: #888; margin-top: 1px; }
 .dropdown-empty { padding: 12px; text-align: center; color: #AAA; font-size: 12px; }
 .add-row { display: none; align-items: center; gap: 8px; margin-top: 8px; background: #F0F8F4; border: 1px solid #B3DEC8; border-radius: 5px; padding: 8px 10px; }
 .add-row.visible { display: flex; }
@@ -260,8 +259,6 @@ var accountValidated = false;
 var validatedAccount = null;
 var selectedDelivery = 'next_day';
 var countdownInterval = null;
-
-var CLEAN_DATA_DATE = '2026-08-24';
 
 var brandAliases = {
   'carlsberg': ['carlsberg pilsner', 'carlsberg export', 'carlsberg non', 'carlsberg special'],
@@ -606,10 +603,9 @@ function loadProducts() {
     var seenSkus = {};
     allProducts = [];
     allRecords.forEach(function(p) {
-      if (p.created_at && p.created_at < CLEAN_DATA_DATE) return;
       var sku = p.custom_object_fields.sku || p.id;
       var name = p.custom_object_fields.name || '';
-      if (!name || name.length < 3) return;
+      if (!name || name === 'Core Brand' || name === '3PB' || name.length < 5) return;
       if (seenSkus[sku]) return;
       seenSkus[sku] = true;
       var nl = name.toLowerCase();
@@ -829,10 +825,12 @@ function updateTicketField() {
   var requesterName = getRequesterName();
   var address = validatedAccount ? ((validatedAccount.deliveryaddressline1 || '') + (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') + (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '')) : '';
   var depotName = validatedAccount ? (validatedAccount.depot_name || '') : '';
-  var deliveryLabel = selectedDelivery ===
-    'same_day' ? 'Same Day' : 'Next Day';
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
-  var bulletLines = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
+  var bulletLines = orderItems.map(function(item) { return '- ' +
+bulletLines = orderItems.map(function(item) { return '- ' +:
+
+item.name + ' x ' + item.qty; }).join('\n');
   var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Delivery_Type,Delivery_Date,Delivery_Charge,Product_SKU,Product_Name,Quantity';
   var csvRows = orderItems.map(function(item) {
     return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', validatedAccount ? (validatedAccount.delivery_postcode || '') : '', depotName, deliveryLabel, deliveryDate, '40.00', item.sku || '', '"' + item.name + '"', item.qty].join(',');
