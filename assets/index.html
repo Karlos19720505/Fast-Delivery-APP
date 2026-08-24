@@ -262,13 +262,13 @@ var validatedAccount = null;
 var selectedDelivery = 'next_day';
 var countdownInterval = null;
 
+var INTERNAL_BRANDS = ['core brand', '3pb', 'core brand ', '3pb '];
+
 var brandAliases = {
   'carlsberg': ['carlsberg pilsner', 'carlsberg export', 'carlsberg non', 'carlsberg special'],
   'brooklyn': ['brooklyn lager', 'brooklyn pilsner', 'brooklyn stonewall', 'brooklyn special', 'brooklyn ground', 'brooklyn bodega', 'brooklyn pulp', 'brooklyn fonio'],
-  'birra moretti': ['birra moretti', 'moretti'],
   'moretti': ['birra moretti', 'moretti'],
   'stella': ['stella artois'],
-  'stella artois': ['stella artois'],
   'guinness': ['guinness draught', 'guinness original', 'guinness 0.0', 'guinness micro', 'guinness surger'],
   'madri': ['madri excepcional'],
   'fosters': ['fosters'],
@@ -283,15 +283,15 @@ var brandAliases = {
   'budweiser': ['budweiser'],
   'amstel': ['amstel lager'],
   'coors': ['coors'],
-  'wainwright': ['wainwright golden', 'wainwright amber'],
-  'hobgoblin': ['hobgoblin gold', 'hobgoblin ruby', 'hobgoblin ipa', 'hobgoblin king'],
-  'thwaites': ['thwaites'],
+  'wainwright': ['wainwright golden', 'wainwright amber', 'wainwright gold', 'wainwright fresh'],
+  'hobgoblin': ['hobgoblin gold', 'hobgoblin ruby', 'hobgoblin ipa', 'hobgoblin king', 'hobgoblin session'],
+  'thwaites': ['thwaites smooth', 'thwaites'],
   'camden': ['camden pale', 'camden stout', 'camden hells'],
   'hells': ['camden hells', 'hells lager'],
   'neck oil': ['neck oil'],
-  'london pride': ['london pride'],
-  'ghost ship': ['ghost ship'],
-  'landlord': ['landlord'],
+  'london pride': ['london pride', 'fullers london pride'],
+  'ghost ship': ['ghost ship', 'adnams ghost ship'],
+  'landlord': ['landlord', 'timothy taylors landlord'],
   'tribute': ['tribute'],
   'thatchers': ['thatchers gold', 'thatchers juicy', 'thatchers apple'],
   'aspall': ['aspall cyder'],
@@ -344,32 +344,31 @@ var brandAliases = {
   'hooch': ['hooch lemon', 'hooch peach', 'hooch tropical', 'hooch cherry'],
   'aperol': ['aperol spritz', 'aperol'],
   'breezer': ['breezer lime', 'breezer orange', 'breezer watermelon'],
-  'banks': ['banks amber', 'banks original', 'banks mild'],
+  'banks': ['banks amber', 'banks original', 'banks mild', 'banks barley'],
   'bombardier': ['bombardier amber'],
   'brakspear': ['brakspear gravity', 'brakspear oxford'],
   'courage': ['courage best', 'courage directors'],
-  'greene king': ['greene king ipa', 'abbot ale'],
-  'gk': ['greene king ipa'],
+  'greene king': ['greene king ipa', 'abbot ale', 'gk ipa'],
+  'gk': ['greene king ipa', 'gk ipa'],
+  'abbot': ['abbot ale', 'greene king abbot'],
   'murphys': ['murphys irish stout'],
   'asahi': ['asahi super dry', 'asahi'],
   'estrella': ['estrella damm'],
   'modelo': ['modelo especial'],
-  'leffe': ['leffe blonde', 'leffe brune'],
   'blue moon': ['blue moon'],
   'old speckled hen': ['old speckled hen'],
   'pedigree': ['marstons pedigree'],
   'marstons': ['marstons pedigree', 'marstons smooth'],
-  'tetley': ['tetley bitter', 'tetley smooth'],
-  'john smiths': ['john smiths extra smooth'],
-  'theakston': ['theakston best', 'theakston dark'],
+  'tetley': ['tetley bitter', 'tetley smooth', 'tetleys'],
+  'john smiths': ['john smiths extra smooth', 'john smiths'],
+  'theakston': ['theakston best', 'theakston dark', 'theakstons'],
   'black sheep': ['black sheep bitter', 'black sheep blonde'],
-  'timothy taylor': ['timothy taylor landlord', 'timothy taylor golden'],
-  'fullers': ['london pride'],
+  'timothy taylor': ['timothy taylors landlord', 'timothy taylor'],
   'adnams': ['ghost ship', 'adnams'],
   'wadworth': ['wadworth 6x'],
-  'butcombe': ['butcombe original', 'butcombe gold'],
+  'butcombe': ['butcombe original', 'butcombe gold', 'butcombe bitter'],
   'proper job': ['proper job ipa'],
-  'erdinger': ['erdinger weiss', 'erdinger weissbier'],
+  'erdinger': ['erdinger weiss', 'erdinger weissbier', 'erdinger dunkel', 'erdinger brauhaus'],
   'kahlua': ['kahlua coffee', 'kahlua'],
   'disaronno': ['disaronno amaretto'],
   'amaretto': ['amaretto', 'disaronno'],
@@ -380,8 +379,18 @@ var brandAliases = {
   'harrogate': ['harrogate still', 'harrogate sparkling'],
   'pellegrino': ['san pellegrino'],
   'acqua panna': ['acqua panna'],
-  'kopparberg': ['kopparberg'],
-  'rekorderlig': ['rekorderlig'],
+  'sapporo': ['sapporo premium', 'sapporo prem'],
+  'poretti': ['birra poretti', 'poretti'],
+  'holsten': ['holsten vier', 'holsten pils'],
+  'mythos': ['mythos'],
+  'shipyard': ['shipyard american pale ale', 'shipyard apa'],
+  'ringwood': ['ringwood fortyniner', 'ringwood razorback'],
+  'mansfield': ['mansfield smooth'],
+  'mcewans': ['mcewans 70', 'mcewans 80', 'mcewans export', 'mcewans champion'],
+  'youngs': ['youngs london original', 'youngs london special', 'youngs light ale'],
+  'kirkstall': ['kirkstall three swords', 'kirkstall virtuous'],
+  'shindigger': ['shindigger mango', 'shindigger west coast'],
+  'boddingtons': ['boddingtons'],
   'gin': ['gin'],
   'vodka': ['vodka'],
   'rum': ['rum'],
@@ -395,7 +404,6 @@ var brandAliases = {
   'pilsner': ['pilsner'],
   'keg': ['keg'],
   'cask': ['cask'],
-  'wheat': ['wheat beer', 'weiss', 'weissbier'],
   'water': ['water', 'still water', 'sparkling water'],
   'tonic': ['tonic water'],
   'ginger': ['ginger beer', 'ginger ale'],
@@ -403,7 +411,11 @@ var brandAliases = {
   'juice': ['juice'],
   'energy': ['energy drink', 'red bull'],
   'cordial': ['cordial'],
-  'squash': ['squash']
+  'squash': ['squash'],
+  'freedom': ['freedom premium lager'],
+  '1664': ['1664 biere', '1664 blanc', '1664 00', '1664 rose', '1664 lager'],
+  'blanc': ['1664 blanc'],
+  'biere': ['1664 biere']
 };
 
 client.on('app.registered', function() {
@@ -479,6 +491,12 @@ document.querySelectorAll('.tab').forEach(function(tab) { tab.addEventListener('
 document.addEventListener('click', function(e) { if (!document.getElementById('search-wrap').contains(e.target)) closeDropdown(); });
 
 function getRequesterName() { return document.getElementById('requester-name').value.trim(); }
+
+function isInternalBrand(brand) {
+  if (!brand) return false;
+  var bl = brand.toLowerCase().trim();
+  return INTERNAL_BRANDS.indexOf(bl) !== -1;
+}
 
 function selectDelivery(type) {
   selectedDelivery = type;
@@ -592,31 +610,41 @@ function loadProducts() {
       return collected;
     });
   }
-  fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100&sort=-created_at').then(function(allRecords) {
-    var seenSkus = {}; allProducts = [];
+  fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords) {
+    var skuBestRecord = {};
     allRecords.forEach(function(p) {
       var sku = p.custom_object_fields.sku || p.id;
       var name = p.custom_object_fields.name || '';
-      if (!name) return;
-      if (seenSkus[sku]) return;
-      seenSkus[sku] = true;
-      var brand = p.custom_object_fields.brand || '';
-      var pack = p.custom_object_fields.pack_size || '';
-      var uom = (p.custom_object_fields.unit_of_measure || '').toUpperCase();
+      var existing = skuBestRecord[sku];
+      if (!existing) { skuBestRecord[sku] = p; return; }
+      var existingName = existing.custom_object_fields.name || '';
+      var existingIsInternal = isInternalBrand(existingName) || existingName.length < 3;
+      var newIsInternal = isInternalBrand(name) || name.length < 3;
+      if (existingIsInternal && !newIsInternal) skuBestRecord[sku] = p;
+      else if (!existingIsInternal && !newIsInternal) {
+        if (new Date(p.updated_at) > new Date(existing.updated_at)) skuBestRecord[sku] = p;
+      }
+    });
+    allProducts = [];
+    Object.keys(skuBestRecord).forEach(function(sku) {
+      var p = skuBestRecord[sku];
+      var name = p.custom_object_fields.name || '';
+      if (!name || name.length < 3) return;
+      var nl = name.toLowerCase();
+      if (nl === 'core brand' || nl === '3pb') return;
       var cat = p.custom_object_fields.category || '';
       if (!cat) {
-        var nl = name.toLowerCase();
         if (nl.indexOf('keg') !== -1 || nl.indexOf('dmm') !== -1 || nl.indexOf('draughtmaster') !== -1) {
           if (nl.indexOf('cider') !== -1) cat = 'cider';
           else cat = 'draught';
-        } else if (nl.indexOf('cask') !== -1) cat = 'cask';
+        } else if (nl.indexOf('cask') !== -1 || nl.indexOf('9g') !== -1 || nl.indexOf('4.5g') !== -1) cat = 'cask';
         else if (nl.indexOf('cider') !== -1) cat = 'cider';
         else if (nl.indexOf('gin') !== -1 || nl.indexOf('vodka') !== -1 || nl.indexOf('rum') !== -1 || nl.indexOf('whisky') !== -1 || nl.indexOf('whiskey') !== -1 || nl.indexOf('brandy') !== -1 || nl.indexOf('cognac') !== -1 || nl.indexOf('tequila') !== -1 || nl.indexOf('liqueur') !== -1 || nl.indexOf('schnapps') !== -1 || nl.indexOf('sambuca') !== -1 || nl.indexOf('amaretto') !== -1 || nl.indexOf('vermouth') !== -1 || nl.indexOf('port') !== -1 || nl.indexOf('sherry') !== -1) cat = 'spirits';
-        else if (nl.indexOf('wine') !== -1 || nl.indexOf('prosecco') !== -1 || nl.indexOf('champagne') !== -1 || nl.indexOf('cava') !== -1 || nl.indexOf('merlot') !== -1 || nl.indexOf('chardonnay') !== -1 || nl.indexOf('sauvignon') !== -1 || nl.indexOf('pinot') !== -1 || nl.indexOf('rioja') !== -1 || nl.indexOf('malbec') !== -1 || nl.indexOf('shiraz') !== -1 || nl.indexOf('cabernet') !== -1 || nl.indexOf('brut') !== -1 || nl.indexOf('spumante') !== -1) cat = 'wine';
-        else if (nl.indexOf('pepsi') !== -1 || nl.indexOf('cola') !== -1 || nl.indexOf('lemonade') !== -1 || nl.indexOf('tonic') !== -1 || nl.indexOf('juice') !== -1 || nl.indexOf('water') !== -1 || nl.indexOf('ginger') !== -1 || nl.indexOf('fever') !== -1 || nl.indexOf('britvic') !== -1 || nl.indexOf('fentimans') !== -1 || nl.indexOf('red bull') !== -1 || nl.indexOf('7up') !== -1 || nl.indexOf('schweppes') !== -1 || nl.indexOf('j2o') !== -1 || nl.indexOf('cordial') !== -1 || nl.indexOf('squash') !== -1 || nl.indexOf('energy') !== -1) cat = 'soft_drink';
+        else if (nl.indexOf('wine') !== -1 || nl.indexOf('prosecco') !== -1 || nl.indexOf('champagne') !== -1 || nl.indexOf('cava') !== -1 || nl.indexOf('merlot') !== -1 || nl.indexOf('chardonnay') !== -1 || nl.indexOf('sauvignon') !== -1 || nl.indexOf('pinot') !== -1 || nl.indexOf('rioja') !== -1 || nl.indexOf('malbec') !== -1 || nl.indexOf('shiraz') !== -1 || nl.indexOf('cabernet') !== -1 || nl.indexOf('brut') !== -1 || nl.indexOf('spumante') !== -1 || nl.indexOf('viognier') !== -1 || nl.indexOf('riesling') !== -1 || nl.indexOf('albarino') !== -1) cat = 'wine';
+        else if (nl.indexOf('pepsi') !== -1 || nl.indexOf('cola') !== -1 || nl.indexOf('lemonade') !== -1 || nl.indexOf('tonic') !== -1 || nl.indexOf('juice') !== -1 || nl.indexOf('water') !== -1 || nl.indexOf('ginger') !== -1 || nl.indexOf('fever') !== -1 || nl.indexOf('britvic') !== -1 || nl.indexOf('fentimans') !== -1 || nl.indexOf('red bull') !== -1 || nl.indexOf('7up') !== -1 || nl.indexOf('schweppes') !== -1 || nl.indexOf('j2o') !== -1 || nl.indexOf('cordial') !== -1 || nl.indexOf('squash') !== -1 || nl.indexOf('energy') !== -1 || nl.indexOf('mineral') !== -1) cat = 'soft_drink';
         else cat = 'packaged';
       }
-      allProducts.push({ id: p.id, name: name, sku: sku, brand: brand, category: cat, pack_size: pack, unit_of_measure: uom, search_keywords: p.custom_object_fields.search_keywords || '' });
+      allProducts.push({ id: p.id, name: name, sku: sku, category: cat, search_keywords: p.custom_object_fields.search_keywords || '' });
     });
     showLoading(false);
     document.getElementById('order-section').style.display = 'block';
@@ -645,10 +673,9 @@ function matchesSearch(p, query) {
   var terms = getSearchTerms(query);
   var nameL = p.name.toLowerCase();
   var skuL = p.sku.toLowerCase();
-  var brandL = p.brand.toLowerCase();
   var kwL = (p.search_keywords || '').toLowerCase();
   return terms.some(function(t) {
-    return nameL.indexOf(t) !== -1 || skuL.indexOf(t) !== -1 || brandL.indexOf(t) !== -1 || kwL.indexOf(t) !== -1;
+    return nameL.indexOf(t) !== -1 || skuL.indexOf(t) !== -1 || kwL.indexOf(t) !== -1;
   });
 }
 
@@ -689,8 +716,7 @@ function renderDropdown(results) {
   if (results.length === 0) { dd.innerHTML = '<div class="dropdown-empty">No products found.</div>'; }
   else {
     dd.innerHTML = results.slice(0, 30).map(function(p) {
-      return '<div class="dropdown-item" data-id="' + esc(p.id) + '"><div class="di-name">' + esc(p.name) + '</div>' +
-        (p.brand ? '<div class="di-meta">' + esc(p.brand) + '</div>' : '') + '</div>';
+      return '<div class="dropdown-item" data-id="' + esc(p.id) + '"><div class="di-name">' + esc(p.name) + '</div></div>';
     }).join('');
     dd.querySelectorAll('.dropdown-item').forEach(function(item) { item.addEventListener('click', function() { selectProduct(item.getAttribute('data-id')); }); });
   }
@@ -705,7 +731,7 @@ function selectProduct(id) {
   selectedProduct = product; closeDropdown();
   document.getElementById('search-input').value = product.name;
   document.getElementById('sel-name').textContent = product.name;
-  document.getElementById('sel-meta').textContent = product.brand || '';
+  document.getElementById('sel-meta').textContent = '';
   document.getElementById('qty-input').value = 1;
   document.getElementById('add-row').classList.add('visible');
   document.getElementById('qty-input').focus();
@@ -717,7 +743,7 @@ function confirmAdd() {
   if (!qty || qty < 1) { document.getElementById('qty-input').focus(); return; }
   var existing = orderItems.find(function(i) { return i.id === selectedProduct.id; });
   if (existing) existing.qty += qty;
-  else orderItems.push({ id: selectedProduct.id, name: selectedProduct.name, sku: selectedProduct.sku, brand: selectedProduct.brand, pack_size: selectedProduct.pack_size, unit_of_measure: selectedProduct.unit_of_measure, qty: qty });
+  else orderItems.push({ id: selectedProduct.id, name: selectedProduct.name, sku: selectedProduct.sku, qty: qty });
   renderOrder(); updateTicketField(); cancelAdd();
   showStatus(selectedProduct.name + ' added to your order', false);
 }
@@ -741,8 +767,7 @@ function renderOrder() {
     resetConfirm(); return;
   }
   container.innerHTML = orderItems.map(function(item, idx) {
-    return '<div class="order-item"><div class="oi-info"><div class="oi-name">' + esc(item.name) + '</div>' +
-      (item.brand ? '<div class="oi-meta">' + esc(item.brand) + '</div>' : '') + '</div>' +
+    return '<div class="order-item"><div class="oi-info"><div class="oi-name">' + esc(item.name) + '</div></div>' +
       '<div class="oi-qty-wrap"><button class="oi-qty-btn" data-idx="' + idx + '" data-delta="-1">-</button><span class="oi-qty">' + item.qty + '</span><button class="oi-qty-btn" data-idx="' + idx + '" data-delta="1">+</button></div>' +
       '<button class="oi-remove" data-idx="' + idx + '">X</button></div>';
   }).join('');
@@ -791,7 +816,8 @@ function changeQty(idx, delta) {
 }
 
 function removeItem(idx) {
-  orderItems.splice(idx, 1);
+  orderItems.splice(
+    idx, 1);
   renderOrder(); updateTicketField(); resetConfirm();
 }
 
@@ -826,10 +852,9 @@ function updateTicketField() {
   var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
   var bulletLines = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
-  var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Delivery_Type,Delivery_Date,Delivery_Charge,Product_SKU,Product_Name,Brand,Quantity';
-  var csvRows = orderItems.
-    map(function(item) {
-    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', validatedAccount ? (validatedAccount.delivery_postcode || '') : '', depotName, deliveryLabel, deliveryDate, '40.00', item.sku || '', '"' + item.name + '"', '"' + (item.brand || '') + '"', item.qty].join(',');
+  var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Delivery_Type,Delivery_Date,Delivery_Charge,Product_SKU,Product_Name,Quantity';
+  var csvRows = orderItems.map(function(item) {
+    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', validatedAccount ? (validatedAccount.delivery_postcode || '') : '', depotName, deliveryLabel, deliveryDate, '40.00', item.sku || '', '"' + item.name + '"', item.qty].join(',');
   }).join('\n');
   var greeting = venueName ? 'Hi ' + venueName + ',' : 'Hi,';
   var publicNote = greeting + '\n\nThank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n' + bulletLines + '\n\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: £40.00\n' + (address ? 'Delivery address: ' + address + '\n' : '') + '\nOur team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message.';
