@@ -28,6 +28,22 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .confirmed-depot { font-size: 11px; color: #fff; background: #00703C; display: inline-block; padding: 1px 8px; border-radius: 10px; margin-top: 2px; font-weight: 700; }
 .confirmed-address { font-size: 11px; color: #888; margin-top: 3px; }
 .change-account { font-size: 11px; color: #00703C; cursor: pointer; text-decoration: underline; margin-top: 6px; display: inline-block; background: none; border: none; padding: 0; }
+.delivery-panel { background: #fff; border: 1px solid #EBEBEB; margin: 8px; border-radius: 6px; padding: 12px; display: none; }
+.delivery-panel-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #00703C; margin-bottom: 10px; letter-spacing: 0.5px; }
+.delivery-options { display: flex; gap: 8px; margin-bottom: 10px; }
+.delivery-option { flex: 1; border: 2px solid #E0E0E0; border-radius: 6px; padding: 10px; cursor: pointer; transition: all 0.15s; }
+.delivery-option.selected { border-color: #00703C; background: #F0F8F4; }
+.delivery-option-type { font-size: 13px; font-weight: 700; color: #1A1A1A; }
+.delivery-option-detail { font-size: 11px; color: #555; margin-top: 2px; }
+.delivery-option-charge { font-size: 12px; font-weight: 700; color: #00703C; margin-top: 4px; }
+.delivery-option-countdown { font-size: 10px; color: #CC6600; margin-top: 3px; font-weight: 600; }
+.delivery-option-countdown.ok { color: #00703C; }
+.delivery-option-countdown.closed { color: #CC0000; }
+.date-row { margin-bottom: 8px; }
+.date-row label { display: block; font-size: 11px; font-weight: 700; color: #555; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+.date-row input { width: 100%; padding: 7px 10px; border: 1px solid #D0D0D0; border-radius: 4px; font-size: 13px; outline: none; }
+.date-row input:focus { border-color: #00703C; }
+.date-error { font-size: 11px; color: #CC0000; margin-top: 4px; display: none; }
 .tabs { display: flex; background: #fff; border-bottom: 2px solid #E8E8E8; overflow-x: auto; }
 .tab { padding: 9px 14px; font-size: 12px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; }
 .tab:hover { color: #00703C; }
@@ -66,6 +82,13 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .oi-qty { font-size: 13px; font-weight: 700; min-width: 22px; text-align: center; }
 .oi-remove { background: none; border: none; color: #CC0000; font-size: 14px; cursor: pointer; opacity: 0.5; padding: 0 2px; }
 .oi-remove:hover { opacity: 1; }
+.order-value-bar { margin: 8px 12px; }
+.order-value-track { background: #E8E8E8; border-radius: 4px; height: 6px; overflow: hidden; }
+.order-value-fill { background: #C8A84B; height: 6px; border-radius: 4px; transition: width 0.3s, background 0.3s; }
+.order-value-fill.met { background: #00703C; }
+.order-value-label { font-size: 11px; color: #888; margin-top: 4px; }
+.order-value-label.met { color: #00703C; font-weight: 700; }
+.order-value-label.warning { color: #CC6600; }
 .confirm-section { background: #fff; margin: 8px; border-radius: 6px; border: 1px solid #EBEBEB; padding: 12px; display: none; }
 .confirm-check-row { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
 .confirm-check-row input[type="checkbox"] { width: 16px; height: 16px; margin-top: 2px; accent-color: #00703C; cursor: pointer; flex-shrink: 0; }
@@ -73,10 +96,18 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .submit-btn { width: 100%; margin-top: 12px; padding: 11px; background: #AAA; color: #fff; border: none; border-radius: 5px; font-size: 13px; font-weight: 700; cursor: not-allowed; transition: background 0.2s; }
 .submit-btn.active { background: #00703C; cursor: pointer; }
 .submit-btn.active:hover { background: #005a30; }
+.order-summary-panel { background: #F0F8F4; border: 1px solid #B3DEC8; border-radius: 6px; margin: 8px; padding: 12px; display: none; }
+.order-summary-title { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #00703C; margin-bottom: 8px; letter-spacing: 0.5px; }
+.order-summary-row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #D8EFE4; }
+.order-summary-row:last-child { border-bottom: none; }
+.order-summary-label { color: #555; }
+.order-summary-value { font-weight: 600; color: #1A1A1A; }
 .confirmation-screen { display: none; background: #fff; margin: 8px; border-radius: 6px; border: 1px solid #B3DEC8; padding: 20px; text-align: center; }
 .confirmation-icon { width: 48px; height: 48px; background: #00703C; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 22px; font-weight: 700; margin: 0 auto 12px; }
 .confirmation-title { font-size: 15px; font-weight: 700; color: #00703C; margin-bottom: 8px; }
+.confirmation-ref { font-size: 12px; background: #F5F5F5; border-radius: 4px; padding: 6px 12px; display: inline-block; margin-bottom: 12px; color: #555; }
 .confirmation-msg { font-size: 12px; color: #555; line-height: 1.6; }
+.confirmation-items { text-align: left; background: #F0F8F4; border-radius: 5px; padding: 10px 12px; margin: 12px 0; font-size: 12px; color: #1A1A1A; line-height: 1.8; }
 .status-bar { padding: 8px 12px; font-size: 12px; background: #F0F8F4; border-top: 1px solid #B3DEC8; color: #00703C; display: none; }
 .status-bar.visible { display: block; }
 .status-bar.warning { background: #FFF8E8; border-top-color: #F0D080; color: #7A5A00; }
@@ -88,15 +119,15 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <body>
 
 <div class="app-header">
-Fast Delivery - Product Selector
-<span id="depot-label"></span>
+Fast Delivery - Order
+<span id="header-countdown"></span>
 </div>
 
 <div class="account-panel" id="account-panel">
 <div class="account-panel-title">Step 1 - Confirm your account</div>
 <div class="account-input-row">
 <input type="text" id="account-input" placeholder="Enter your account number..." autocomplete="off"/>
-<button class="validate-btn" id="validate-btn">Confirm my account</button>
+<button class="validate-btn" id="validate-btn">Confirm</button>
 </div>
 <div class="account-status" id="account-status"></div>
 <div class="account-confirmed" id="account-confirmed">
@@ -109,6 +140,29 @@ Fast Delivery - Product Selector
 </div>
 </div>
 <button class="change-account" id="change-account-btn">Change account</button>
+</div>
+</div>
+
+<div class="delivery-panel" id="delivery-panel">
+<div class="delivery-panel-title">Step 2 - Choose delivery</div>
+<div class="delivery-options">
+<div class="delivery-option selected" id="opt-nextday" data-type="next_day">
+<div class="delivery-option-type">Next Day</div>
+<div class="delivery-option-detail">Order before 5:00pm</div>
+<div class="delivery-option-charge">No charge</div>
+<div class="delivery-option-countdown" id="nextday-countdown"></div>
+</div>
+<div class="delivery-option" id="opt-sameday" data-type="same_day">
+<div class="delivery-option-type">Same Day</div>
+<div class="delivery-option-detail">Order before 3:00pm</div>
+<div class="delivery-option-charge">£40.00</div>
+<div class="delivery-option-countdown" id="sameday-countdown"></div>
+</div>
+</div>
+<div class="date-row">
+<label for="delivery-date">Requested delivery date</label>
+<input type="date" id="delivery-date"/>
+<div class="date-error" id="date-error">Please select a valid delivery date.</div>
 </div>
 </div>
 
@@ -150,6 +204,12 @@ Your order
 <div id="order-items">
 <div class="order-empty">No products added yet.</div>
 </div>
+<div class="order-value-bar" id="order-value-bar" style="display:none;">
+<div class="order-value-track">
+<div class="order-value-fill" id="order-value-fill" style="width:0%"></div>
+</div>
+<div class="order-value-label" id="order-value-label"></div>
+</div>
 </div>
 
 <div class="confirm-section" id="confirm-section">
@@ -162,12 +222,19 @@ I have checked my order and confirm that the products and quantities listed abov
 <button class="submit-btn" id="submit-btn" disabled>Submit my order</button>
 </div>
 
+<div class="order-summary-panel" id="order-summary-panel">
+<div class="order-summary-title">Order summary</div>
+<div id="order-summary-rows"></div>
+</div>
+
 <div class="confirmation-screen" id="confirmation-screen">
 <div class="confirmation-icon">OK</div>
 <div class="confirmation-title">Order received</div>
+<div class="confirmation-ref" id="confirmation-ref"></div>
+<div class="confirmation-items" id="confirmation-items"></div>
 <div class="confirmation-msg">
-Thank you. Your Fast Delivery order has been received and is being processed by our team.<br><br>
-You will receive a confirmation email shortly. If you need to make any changes or have any questions, please reply to that email or call us on <strong>0800 587 0773</strong>.
+Your Fast Delivery order has been received and is being processed by our team.<br><br>
+You will receive a confirmation email shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.
 </div>
 </div>
 
@@ -183,6 +250,9 @@ var selectedProduct = null;
 var searchTimeout = null;
 var accountValidated = false;
 var validatedAccount = null;
+var selectedDelivery = 'next_day';
+var countdownInterval = null;
+var MIN_ORDER_VALUE = 200;
 
 var categoryMap = {
   'all': null,
@@ -252,9 +322,78 @@ var brandAliases = {
 };
 
 client.on('app.registered', function() {
-  client.invoke('resize', { width: '100%', height: '600px' });
-  showStatus('Ready. Enter your account number above.', false);
+  client.invoke('resize', { width: '100%', height: '700px' });
+  autoFillFromUrl();
+  startCountdowns();
+  setDefaultDate();
 });
+
+function autoFillFromUrl() {
+  try {
+    client.get('window.location').then(function(data) {
+      var url = (data['window.location'] && data['window.location'].href) || '';
+      var match = url.match(/account_number=([^&]+)/);
+      if (match && match[1]) {
+        document.getElementById('account-input').value = decodeURIComponent(match[1]);
+      }
+    }).catch(function() {});
+  } catch(e) {}
+}
+
+function setDefaultDate() {
+  var today = new Date();
+  var tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  var min = tomorrow.toISOString().split('T')[0];
+  var dateInput = document.getElementById('delivery-date');
+  dateInput.min = min;
+  dateInput.value = min;
+}
+
+function startCountdowns() {
+  updateCountdowns();
+  countdownInterval = setInterval(updateCountdowns, 60000);
+}
+
+function updateCountdowns() {
+  var now = new Date();
+  var hours = now.getHours();
+  var minutes = now.getMinutes();
+  var totalMins = hours * 60 + minutes;
+
+  var sameDayCutoff = 15 * 60;
+  var nextDayCutoff = 17 * 60;
+
+  var sdEl = document.getElementById('sameday-countdown');
+  var ndEl = document.getElementById('nextday-countdown');
+  var headerEl = document.getElementById('header-countdown');
+
+  if (totalMins < sameDayCutoff) {
+    var minsLeft = sameDayCutoff - totalMins;
+    var h = Math.floor(minsLeft / 60);
+    var m = minsLeft % 60;
+    var txt = h > 0 ? h + 'h ' + m + 'm left' : m + 'm left';
+    sdEl.textContent = txt;
+    sdEl.className = 'delivery-option-countdown' + (minsLeft < 60 ? '' : ' ok');
+    headerEl.textContent = 'Same day closes in ' + txt;
+  } else {
+    sdEl.textContent = 'Closed for today';
+    sdEl.className = 'delivery-option-countdown closed';
+    headerEl.textContent = '';
+  }
+
+  if (totalMins < nextDayCutoff) {
+    var minsLeft2 = nextDayCutoff - totalMins;
+    var h2 = Math.floor(minsLeft2 / 60);
+    var m2 = minsLeft2 % 60;
+    var txt2 = h2 > 0 ? h2 + 'h ' + m2 + 'm left' : m2 + 'm left';
+    ndEl.textContent = txt2;
+    ndEl.className = 'delivery-option-countdown ok';
+  } else {
+    ndEl.textContent = 'Closed for today';
+    ndEl.className = 'delivery-option-countdown closed';
+  }
+}
 
 document.getElementById('validate-btn').addEventListener('click', function() {
   validateAccount();
@@ -286,7 +425,7 @@ document.getElementById('search-input').addEventListener('focus', function() {
 
 document.getElementById('confirm-checkbox').addEventListener('change', function() {
   var btn = document.getElementById('submit-btn');
-  if (this.checked && orderItems.length > 0) {
+  if (this.checked && orderItems.length > 0 && validateDeliveryDate()) {
     btn.disabled = false;
     btn.classList.add('active');
   } else {
@@ -299,6 +438,19 @@ document.getElementById('submit-btn').addEventListener('click', function() {
   if (!this.disabled) submitOrder();
 });
 
+document.getElementById('delivery-date').addEventListener('change', function() {
+  validateDeliveryDate();
+  resetConfirm();
+});
+
+document.getElementById('opt-nextday').addEventListener('click', function() {
+  selectDelivery('next_day');
+});
+
+document.getElementById('opt-sameday').addEventListener('click', function() {
+  selectDelivery('same_day');
+});
+
 document.querySelectorAll('.tab').forEach(function(tab) {
   tab.addEventListener('click', function() { setTab(tab); });
 });
@@ -308,6 +460,41 @@ document.addEventListener('click', function(e) {
     closeDropdown();
   }
 });
+
+function selectDelivery(type) {
+  selectedDelivery = type;
+  document.getElementById('opt-nextday').classList.toggle('selected', type === 'next_day');
+  document.getElementById('opt-sameday').classList.toggle('selected', type === 'same_day');
+  resetConfirm();
+  updateTicketField();
+}
+
+function validateDeliveryDate() {
+  var dateInput = document.getElementById('delivery-date');
+  var errorEl = document.getElementById('date-error');
+  var val = dateInput.value;
+  if (!val) {
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'Please select a delivery date.';
+    return false;
+  }
+  var selected = new Date(val);
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  if (selected <= today) {
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'Please select a future date.';
+    return false;
+  }
+  var day = selected.getDay();
+  if (day === 0 || day === 6) {
+    errorEl.style.display = 'block';
+    errorEl.textContent = 'We deliver Monday to Friday only. Please select a weekday.';
+    return false;
+  }
+  errorEl.style.display = 'none';
+  return true;
+}
 
 function validateAccount() {
   var accountNumber = document.getElementById('account-input').value.trim();
@@ -325,9 +512,7 @@ function validateAccount() {
     var records = data.custom_object_records || [];
     var match = null;
     records.forEach(function(r) {
-      if (r.custom_object_fields.account_number === accountNumber) {
-        match = r;
-      }
+      if (r.custom_object_fields.account_number === accountNumber) match = r;
     });
     if (match) {
       validatedAccount = match.custom_object_fields;
@@ -337,6 +522,7 @@ function validateAccount() {
       lookupDepotName(validatedAccount.assigned_depot, function(depotName) {
         validatedAccount.depot_name = depotName;
         showAccountConfirmed(validatedAccount);
+        document.getElementById('delivery-panel').style.display = 'block';
         loadProducts();
       });
     } else {
@@ -385,6 +571,7 @@ function changeAccount() {
   validatedAccount = null;
   allProducts = [];
   orderItems = [];
+  selectedDelivery = 'next_day';
   document.getElementById('account-input').value = '';
   document.getElementById('account-confirmed').style.display = 'none';
   document.getElementById('account-status').style.display = 'none';
@@ -392,16 +579,18 @@ function changeAccount() {
   document.getElementById('account-panel').style.background = '#fff';
   document.getElementById('account-panel').style.borderColor = '#EBEBEB';
   document.getElementById('validate-btn').disabled = false;
+  document.getElementById('delivery-panel').style.display = 'none';
   document.getElementById('product-section').style.display = 'none';
   document.getElementById('order-section').style.display = 'none';
   document.getElementById('confirm-section').style.display = 'none';
+  document.getElementById('order-summary-panel').style.display = 'none';
   document.getElementById('confirmation-screen').style.display = 'none';
   document.getElementById('status-bar').className = 'status-bar';
-  document.getElementById('confirm-checkbox').checked = false;
-  document.getElementById('submit-btn').disabled = true;
-  document.getElementById('submit-btn').classList.remove('active');
-  document.getElementById('submit-btn').textContent = 'Submit my order';
+  document.getElementById('opt-nextday').classList.add('selected');
+  document.getElementById('opt-sameday').classList.remove('selected');
+  resetConfirm();
   renderOrder();
+  setDefaultDate();
 }
 
 function loadProducts() {
@@ -443,7 +632,6 @@ function loadProducts() {
         search_keywords: p.custom_object_fields.search_keywords || ''
       });
     });
-
     showLoading(false);
     document.getElementById('order-section').style.display = 'block';
     renderOrder();
@@ -475,11 +663,8 @@ function matchesSearch(p, query) {
   var packL = p.pack_size.toLowerCase();
   var kwL = (p.search_keywords || '').toLowerCase();
   return terms.some(function(term) {
-    return nameL.indexOf(term) !== -1 ||
-      skuL.indexOf(term) !== -1 ||
-      brandL.indexOf(term) !== -1 ||
-      packL.indexOf(term) !== -1 ||
-      kwL.indexOf(term) !== -1;
+    return nameL.indexOf(term) !== -1 || skuL.indexOf(term) !== -1 ||
+      brandL.indexOf(term) !== -1 || packL.indexOf(term) !== -1 || kwL.indexOf(term) !== -1;
   });
 }
 
@@ -487,11 +672,8 @@ function setTab(el) {
   document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active');
   activeCategory = el.getAttribute('data-cat');
-  if (document.getElementById('search-input').value.trim().length > 0) {
-    onSearch();
-  } else {
-    closeDropdown();
-  }
+  if (document.getElementById('search-input').value.trim().length > 0) onSearch();
+  else closeDropdown();
 }
 
 function onSearch() {
@@ -502,9 +684,7 @@ function onSearch() {
     if (query.length < 1) { closeDropdown(); cancelAdd(); return; }
     var cats = categoryMap[activeCategory];
     var results = allProducts.filter(function(p) {
-      var matchText = matchesSearch(p, query);
-      var matchCat = !cats || cats.indexOf(p.category) !== -1;
-      return matchText && matchCat;
+      return matchesSearch(p, query) && (!cats || cats.indexOf(p.category) !== -1);
     });
     renderDropdown(results);
   }, 180);
@@ -526,9 +706,7 @@ function renderDropdown(results) {
         '</div>';
     }).join('');
     dd.querySelectorAll('.dropdown-item').forEach(function(item) {
-      item.addEventListener('click', function() {
-        selectProduct(item.getAttribute('data-id'));
-      });
+      item.addEventListener('click', function() { selectProduct(item.getAttribute('data-id')); });
     });
   }
   dd.classList.add('open');
@@ -556,17 +734,12 @@ function confirmAdd() {
   var qty = parseInt(document.getElementById('qty-input').value, 10);
   if (!qty || qty < 1) { document.getElementById('qty-input').focus(); return; }
   var existing = orderItems.find(function(i) { return i.id === selectedProduct.id; });
-  if (existing) {
-    existing.qty += qty;
-  } else {
+  if (existing) { existing.qty += qty; }
+  else {
     orderItems.push({
-      id: selectedProduct.id,
-      name: selectedProduct.name,
-      sku: selectedProduct.sku,
-      brand: selectedProduct.brand,
-      pack_size: selectedProduct.pack_size,
-      unit_of_measure: selectedProduct.unit_of_measure,
-      qty: qty
+      id: selectedProduct.id, name: selectedProduct.name, sku: selectedProduct.sku,
+      brand: selectedProduct.brand, pack_size: selectedProduct.pack_size,
+      unit_of_measure: selectedProduct.unit_of_measure, qty: qty
     });
   }
   renderOrder();
@@ -582,6 +755,12 @@ function cancelAdd() {
   closeDropdown();
 }
 
+function getOrderValue() {
+  return orderItems.reduce(function(total, item) {
+    return total + item.qty;
+  }, 0);
+}
+
 function renderOrder() {
   var container = document.getElementById('order-items');
   var count = document.getElementById('order-count');
@@ -590,9 +769,9 @@ function renderOrder() {
   if (orderItems.length === 0) {
     container.innerHTML = '<div class="order-empty">No products added yet. Search above to add items.</div>';
     document.getElementById('confirm-section').style.display = 'none';
-    document.getElementById('confirm-checkbox').checked = false;
-    document.getElementById('submit-btn').disabled = true;
-    document.getElementById('submit-btn').classList.remove('active');
+    document.getElementById('order-value-bar').style.display = 'none';
+    document.getElementById('order-summary-panel').style.display = 'none';
+    resetConfirm();
     return;
   }
 
@@ -618,12 +797,46 @@ function renderOrder() {
     });
   });
   container.querySelectorAll('.oi-remove').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      removeItem(parseInt(btn.getAttribute('data-idx')));
-    });
+    btn.addEventListener('click', function() { removeItem(parseInt(btn.getAttribute('data-idx'))); });
   });
 
+  updateOrderValueBar();
+  updateOrderSummary();
   document.getElementById('confirm-section').style.display = 'block';
+}
+
+function updateOrderValueBar() {
+  var totalQty = orderItems.reduce(function(t, i) { return t + i.qty; }, 0);
+  var bar = document.getElementById('order-value-bar');
+  var fill = document.getElementById('order-value-fill');
+  var label = document.getElementById('order-value-label');
+  bar.style.display = 'block';
+  var pct = Math.min(100, Math.round((totalQty / 10) * 100));
+  fill.style.width = pct + '%';
+  if (totalQty >= 1) {
+    fill.className = 'order-value-fill met';
+    label.className = 'order-value-label met';
+    label.textContent = totalQty + ' item' + (totalQty !== 1 ? 's' : '') + ' in your order';
+  } else {
+    fill.className = 'order-value-fill';
+    label.className = 'order-value-label warning';
+    label.textContent = 'Add items to your order';
+  }
+}
+
+function updateOrderSummary() {
+  var panel = document.getElementById('order-summary-panel');
+  var rows = document.getElementById('order-summary-rows');
+  if (orderItems.length === 0) { panel.style.display = 'none'; return; }
+  panel.style.display = 'block';
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
+  var deliveryCharge = selectedDelivery === 'same_day' ? '£40.00' : 'No charge';
+  var dateVal = document.getElementById('delivery-date').value || 'Not selected';
+  rows.innerHTML =
+    '<div class="order-summary-row"><span class="order-summary-label">Delivery type</span><span class="order-summary-value">' + deliveryLabel + '</span></div>' +
+    '<div class="order-summary-row"><span class="order-summary-label">Delivery date</span><span class="order-summary-value">' + dateVal + '</span></div>' +
+    '<div class="order-summary-row"><span class="order-summary-label">Delivery charge</span><span class="order-summary-value">' + deliveryCharge + '</span></div>' +
+    '<div class="order-summary-row"><span class="order-summary-label">Items</span><span class="order-summary-value">' + orderItems.length + ' product' + (orderItems.length !== 1 ? 's' : '') + '</span></div>';
 }
 
 function resetConfirm() {
@@ -648,6 +861,7 @@ function removeItem(idx) {
 }
 
 function submitOrder() {
+  if (!validateDeliveryDate()) return;
   var btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.classList.remove('active');
@@ -657,9 +871,17 @@ function submitOrder() {
     document.getElementById('product-section').style.display = 'none';
     document.getElementById('order-section').style.display = 'none';
     document.getElementById('confirm-section').style.display = 'none';
+    document.getElementById('order-summary-panel').style.display = 'none';
     document.getElementById('account-panel').style.display = 'none';
+    document.getElementById('delivery-panel').style.display = 'none';
+    var confItems = orderItems.map(function(item) {
+      return '- ' + item.name + ' x ' + item.qty;
+    }).join('\n');
+    document.getElementById('confirmation-items').textContent = confItems;
+    document.getElementById('confirmation-ref').textContent = 'Reference: FD-' + Date.now().toString().slice(-6);
     document.getElementById('confirmation-screen').style.display = 'block';
     document.getElementById('status-bar').className = 'status-bar';
+    if (countdownInterval) clearInterval(countdownInterval);
   }, 800);
 }
 
@@ -674,24 +896,22 @@ function updateTicketField() {
     (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '')
   ) : '';
   var depotName = validatedAccount ? (validatedAccount.depot_name || '') : '';
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
+  var deliveryCharge = selectedDelivery === 'same_day' ? '£40.00' : 'None';
+  var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
 
   var bulletLines = orderItems.map(function(item) {
-    var packInfo = item.pack_size && item.name.indexOf(item.pack_size) === -1
-      ? ' (' + item.pack_size + ')'
-      : '';
+    var packInfo = item.pack_size && item.name.indexOf(item.pack_size) === -1 ? ' (' + item.pack_size + ')' : '';
     return '- ' + item.name + packInfo + ' x ' + item.qty;
   }).join('\n');
 
-  var csvHeader = 'Account_Number,Customer_Name,Delivery_Postcode,Product_SKU,Product_Name,Pack_Size,Quantity';
+  var csvHeader = 'Account_Number,Customer_Name,Delivery_Postcode,Depot,Delivery_Type,Delivery_Date,Delivery_Charge,Product_SKU,Product_Name,Pack_Size,Quantity';
   var csvRows = orderItems.map(function(item) {
     return [
-      accountNumber,
-      '"' + venueName + '"',
+      accountNumber, '"' + venueName + '"',
       validatedAccount ? (validatedAccount.delivery_postcode || '') : '',
-      item.sku || '',
-      '"' + item.name + '"',
-      '"' + (item.pack_size || '') + '"',
-      item.qty
+      depotName, deliveryLabel, deliveryDate, deliveryCharge,
+      item.sku || '', '"' + item.name + '"', '"' + (item.pack_size || '') + '"', item.qty
     ].join(',');
   }).join('\n');
 
@@ -701,7 +921,10 @@ function updateTicketField() {
     greeting + '\n\n' +
     'Thank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n' +
     bulletLines + '\n\n' +
-    (address ? 'Delivery address: ' + address + '\n\n' : '') +
+    'Delivery type: ' + deliveryLabel + '\n' +
+    'Requested date: ' + deliveryDate + '\n' +
+    'Delivery charge: ' + deliveryCharge + '\n' +
+    (address ? 'Delivery address: ' + address + '\n' : '') + '\n' +
     'Our team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message.';
 
   var internalNote =
@@ -709,7 +932,10 @@ function updateTicketField() {
     'Venue: ' + venueName + '\n' +
     'Account: ' + accountNumber + '\n' +
     (address ? 'Delivery address: ' + address + '\n' : '') +
-    'Depot: ' + depotName + '\n\n' +
+    'Depot: ' + depotName + '\n' +
+    'Delivery type: ' + deliveryLabel + '\n' +
+    'Requested date: ' + deliveryDate + '\n' +
+    'Delivery charge: ' + deliveryCharge + '\n\n' +
     'Items ordered:\n' + bulletLines + '\n\n' +
     'Next steps:\n' +
     '1. Check availability at ' + depotName + ' depot\n' +
