@@ -160,7 +160,7 @@ Fast Delivery - Order
 <div class="delivery-option selected" id="opt-nextday">
 <div class="delivery-option-type">Next Day</div>
 <div class="delivery-option-detail">Order before 5:00pm</div>
-<div class="delivery-option-charge">No charge</div>
+<div class="delivery-option-charge">£40.00</div>
 <div class="delivery-option-countdown" id="nextday-countdown"></div>
 </div>
 <div class="delivery-option" id="opt-sameday">
@@ -669,14 +669,13 @@ function updateOrderSummary() {
   var panel = document.getElementById('order-summary-panel');
   if (orderItems.length === 0) { panel.style.display = 'none'; return; }
   var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
-  var deliveryCharge = selectedDelivery === 'same_day' ? '£40.00' : 'No charge';
   var dateVal = document.getElementById('delivery-date').value || 'Not selected';
   panel.style.display = 'block';
   panel.innerHTML = '<div class="order-summary-title">Order summary</div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Requested by</span><span class="order-summary-value">' + esc(getRequesterName() || 'Not provided') + '</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Delivery type</span><span class="order-summary-value">' + deliveryLabel + '</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Delivery date</span><span class="order-summary-value">' + dateVal + '</span></div>' +
-    '<div class="order-summary-row"><span class="order-summary-label">Delivery charge</span><span class="order-summary-value">' + deliveryCharge + '</span></div>' +
+    '<div class="order-summary-row"><span class="order-summary-label">Delivery charge</span><span class="order-summary-value">£40.00</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Items</span><span class="order-summary-value">' + orderItems.length + ' product' + (orderItems.length !== 1 ? 's' : '') + '</span></div>';
 }
 
@@ -726,7 +725,6 @@ function updateTicketField() {
   var address = validatedAccount ? ((validatedAccount.deliveryaddressline1 || '') + (validatedAccount.delivery_city ? ', ' + validatedAccount.delivery_city : '') + (validatedAccount.delivery_postcode ? ', ' + validatedAccount.delivery_postcode : '')) : '';
   var depotName = validatedAccount ? (validatedAccount.depot_name || '') : '';
   var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
-  var deliveryCharge = selectedDelivery === 'same_day' ? '£40.00' : 'None';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
   var bulletLines = orderItems.map(function(item) {
     var packInfo = item.pack_size && item.name.indexOf(item.pack_size) === -1 ? ' (' + item.pack_size + ')' : '';
@@ -734,11 +732,11 @@ function updateTicketField() {
   }).join('\n');
   var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Delivery_Type,Delivery_Date,Delivery_Charge,Product_SKU,Product_Name,Pack_Size,Quantity';
   var csvRows = orderItems.map(function(item) {
-    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', validatedAccount ? (validatedAccount.delivery_postcode || '') : '', depotName, deliveryLabel, deliveryDate, deliveryCharge, item.sku || '', '"' + item.name + '"', '"' + (item.pack_size || '') + '"', item.qty].join(',');
+    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', validatedAccount ? (validatedAccount.delivery_postcode || '') : '', depotName, deliveryLabel, deliveryDate, '40.00', item.sku || '', '"' + item.name + '"', '"' + (item.pack_size || '') + '"', item.qty].join(',');
   }).join('\n');
   var greeting = venueName ? 'Hi ' + venueName + ',' : 'Hi,';
-  var publicNote = greeting + '\n\nThank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n' + bulletLines + '\n\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: ' + deliveryCharge + '\n' + (address ? 'Delivery address: ' + address + '\n' : '') + '\nOur team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message.';
-  var internalNote = 'FAST DELIVERY ORDER - ACTION REQUIRED\n\nVenue: ' + venueName + '\nAccount: ' + accountNumber + '\nRequested by: ' + requesterName + '\n' + (address ? 'Delivery address: ' + address + '\n' : '') + 'Depot: ' + depotName + '\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: ' + deliveryCharge + '\n\nItems ordered:\n' + bulletLines + '\n\nNext steps:\n1. Check availability at ' + depotName + ' depot\n2. Confirm payment with the credit team\n3. Pass to the depot planner to schedule delivery\n\nUpload reference:\n' + csvHeader + '\n' + csvRows;
+  var publicNote = greeting + '\n\nThank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n' + bulletLines + '\n\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: £40.00\n' + (address ? 'Delivery address: ' + address + '\n' : '') + '\nOur team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message.';
+  var internalNote = 'FAST DELIVERY ORDER - ACTION REQUIRED\n\nVenue: ' + venueName + '\nAccount: ' + accountNumber + '\nRequested by: ' + requesterName + '\n' + (address ? 'Delivery address: ' + address + '\n' : '') + 'Depot: ' + depotName + '\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: £40.00\n\nItems ordered:\n' + bulletLines + '\n\nNext steps:\n1. Check availability at ' + depotName + ' depot\n2. Confirm payment with the credit team\n3. Pass to the depot planner to schedule delivery\n\nUpload reference:\n' + csvHeader + '\n' + csvRows;
   client.set('ticket.comment.text', publicNote + '\n\n---INTERNAL---\n\n' + internalNote);
 }
 
