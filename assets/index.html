@@ -36,15 +36,22 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .change-account { font-size: 10px; color: #00703C; cursor: pointer; text-decoration: underline; margin-top: 4px; display: inline-block; background: none; border: none; padding: 0; }
 .delivery-panel { background: #fff; border: 1px solid #EBEBEB; margin: 6px; border-radius: 6px; padding: 8px; display: none; }
 .delivery-panel-title { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #00703C; margin-bottom: 8px; letter-spacing: 0.5px; }
-.delivery-options { display: flex; gap: 6px; margin-bottom: 8px; }
-.delivery-option { flex: 1; border: 2px solid #E0E0E0; border-radius: 5px; padding: 7px; cursor: pointer; transition: all 0.15s; }
+.delivery-options { display: flex; gap: 4px; margin-bottom: 8px; }
+.delivery-option { flex: 1; border: 2px solid #E0E0E0; border-radius: 5px; padding: 6px; cursor: pointer; transition: all 0.15s; }
 .delivery-option.selected { border-color: #00703C; background: #F0F8F4; }
-.delivery-option-type { font-size: 13px; font-weight: 700; color: #1A1A1A; }
-.delivery-option-detail { font-size: 10px; color: #555; margin-top: 1px; }
-.delivery-option-charge { font-size: 12px; font-weight: 700; color: #00703C; margin-top: 3px; }
-.delivery-option-countdown { font-size: 12px; font-weight: 700; margin-top: 4px; padding: 3px 6px; border-radius: 3px; display: inline-block; color: #0066CC; background: #E8F0FF; }
+.delivery-option.cutoff-passed { border-color: #F0D080; background: #FFF8E8; }
+.delivery-option-type { font-size: 11px; font-weight: 700; color: #1A1A1A; }
+.delivery-option-detail { font-size: 9px; color: #555; margin-top: 1px; }
+.delivery-option-charge { font-size: 10px; font-weight: 700; color: #00703C; margin-top: 2px; }
+.delivery-option-countdown { font-size: 10px; font-weight: 700; margin-top: 3px; padding: 2px 5px; border-radius: 3px; display: inline-block; color: #0066CC; background: #E8F0FF; }
 .delivery-option-countdown.urgent { color: #CC0000; background: #FFF0F0; }
 .delivery-option-countdown.closed { color: #CC0000; background: #FFF0F0; }
+.delivery-option-countdown.warning { color: #7A5A00; background: #FFF8E8; }
+.add-order-info { background: #FFF8E8; border: 1px solid #F0D080; border-radius: 4px; padding: 6px 8px; margin-top: 6px; font-size: 11px; color: #7A5A00; display: none; line-height: 1.5; }
+.add-order-info.visible { display: block; }
+.add-order-proceed { margin-top: 6px; }
+.add-order-proceed label { font-size: 11px; color: #1A1A1A; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.add-order-proceed input[type="checkbox"] { accent-color: #00703C; width: 13px; height: 13px; }
 .date-row { margin-top: 6px; }
 .date-row label { display: block; font-size: 10px; font-weight: 700; color: #555; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
 .date-row input[type="date"] { width: 100%; padding: 6px 8px; border: 1px solid #D0D0D0; border-radius: 4px; font-size: 12px; outline: none; background: #fff; }
@@ -102,6 +109,8 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .submit-btn { width: 100%; margin-top: 8px; padding: 9px; background: #AAA; color: #fff; border: none; border-radius: 4px; font-size: 12px; font-weight: 700; cursor: not-allowed; transition: background 0.2s; }
 .submit-btn.active { background: #00703C; cursor: pointer; }
 .submit-btn.active:hover { background: #005a30; }
+.submit-btn.depot-pending { background: #C8A84B; cursor: pointer; }
+.submit-btn.depot-pending:hover { background: #a8883b; }
 .order-summary-panel { background: #F0F8F4; border: 1px solid #B3DEC8; border-radius: 5px; margin: 6px; padding: 8px; display: none; }
 .order-summary-title { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #00703C; margin-bottom: 5px; letter-spacing: 0.5px; }
 .order-summary-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #D8EFE4; }
@@ -110,7 +119,9 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .order-summary-value { font-weight: 600; color: #1A1A1A; }
 .confirmation-screen { display: none; background: #fff; margin: 6px; border-radius: 5px; border: 1px solid #B3DEC8; padding: 16px; text-align: center; }
 .confirmation-icon { width: 44px; height: 44px; background: #00703C; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 20px; font-weight: 700; margin: 0 auto 10px; }
+.confirmation-icon.pending { background: #C8A84B; }
 .confirmation-title { font-size: 14px; font-weight: 700; color: #00703C; margin-bottom: 6px; }
+.confirmation-title.pending { color: #7A5A00; }
 .confirmation-ref { font-size: 11px; background: #F5F5F5; border-radius: 3px; padding: 5px 10px; display: inline-block; margin-bottom: 10px; color: #555; }
 .confirmation-items { text-align: left; background: #F0F8F4; border-radius: 4px; padding: 8px 10px; margin: 8px 0; font-size: 11px; color: #1A1A1A; line-height: 1.7; white-space: pre-line; }
 .confirmation-msg { font-size: 11px; color: #555; line-height: 1.5; }
@@ -123,7 +134,7 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .delivery-day-badge { display: inline-block; background: #00703C; color: #fff; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; margin-top: 4px; }
 </style>
 </head>
-<body style="min-height:800px;">
+<body>
 <div class="app-header">
   <span class="app-header-title">Carlsberg Britvic</span>
   <span class="app-header-countdown" id="header-countdown"></span>
@@ -164,15 +175,30 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
   <div class="delivery-options">
     <div class="delivery-option selected" id="opt-nextday">
       <div class="delivery-option-type">Next Day</div>
-      <div class="delivery-option-detail">Order before 5:00pm</div>
+      <div class="delivery-option-detail">Before 5:00pm</div>
       <div class="delivery-option-charge">No charge</div>
       <div class="delivery-option-countdown" id="nextday-countdown"></div>
     </div>
     <div class="delivery-option" id="opt-sameday">
       <div class="delivery-option-type">Same Day</div>
-      <div class="delivery-option-detail">Order before 3:00pm</div>
+      <div class="delivery-option-detail">Before 3:00pm</div>
       <div class="delivery-option-charge">£40.00</div>
       <div class="delivery-option-countdown" id="sameday-countdown"></div>
+    </div>
+    <div class="delivery-option" id="opt-addorder">
+      <div class="delivery-option-type">Add to Order</div>
+      <div class="delivery-option-detail">11am day prior</div>
+      <div class="delivery-option-charge">No charge</div>
+      <div class="delivery-option-countdown" id="addorder-countdown"></div>
+    </div>
+  </div>
+  <div class="add-order-info" id="add-order-info">
+    <strong>Cut-off time has passed.</strong> If you'd like to proceed, we can raise a request to the depot to check availability for your next delivery.
+    <div class="add-order-proceed">
+      <label>
+        <input type="checkbox" id="add-order-override"/>
+        Proceed and request depot availability
+      </label>
     </div>
   </div>
   <div class="date-row">
@@ -229,11 +255,11 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
   <button class="submit-btn" id="submit-btn" disabled>Submit my order</button>
 </div>
 <div class="confirmation-screen" id="confirmation-screen">
-  <div class="confirmation-icon">OK</div>
-  <div class="confirmation-title">Order received</div>
+  <div class="confirmation-icon" id="confirmation-icon">OK</div>
+  <div class="confirmation-title" id="confirmation-title">Order received</div>
   <div class="confirmation-ref" id="confirmation-ref"></div>
   <div class="confirmation-items" id="confirmation-items"></div>
-  <div class="confirmation-msg">Your Fast Delivery order has been received and is being processed by our team.<br><br>You will receive a confirmation shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.</div>
+  <div class="confirmation-msg" id="confirmation-msg">Your Fast Delivery order has been received and is being processed by our team.<br><br>You will receive a confirmation shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.</div>
 </div>
 <div class="status-bar" id="status-bar"></div>
 <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
@@ -250,11 +276,11 @@ var accountDetailsRecord = null;
 var selectedDelivery = 'next_day';
 var countdownInterval = null;
 var orderTimestamp = null;
+var addOrderCutoffPassed = false;
+var addOrderOverride = false;
 var brandAliases = {'carlsberg':['carlsberg pilsner','carlsberg export','carlsberg non','carlsberg special'],'brooklyn':['brooklyn lager','brooklyn pilsner','brooklyn stonewall','brooklyn special','brooklyn ground','brooklyn bodega','brooklyn pulp','brooklyn fonio'],'moretti':['birra moretti','moretti'],'stella':['stella artois'],'guinness':['guinness draught','guinness original','guinness 0.0','guinness micro','guinness surger'],'madri':['madri excepcional'],'fosters':['fosters'],'carling':['carling'],'doom bar':['doom bar'],'strongbow':['strongbow dark','strongbow original','strongbow strawberry'],'heineken':['heineken'],'peroni':['peroni azzurro','birra poretti','poretti'],'poretti':['birra poretti','poretti'],'san miguel':['san miguel'],'corona':['corona extra'],'budweiser':['budweiser'],'amstel':['amstel lager'],'coors':['coors'],'wainwright':['wainwright golden','wainwright amber','wainwright gold','wainwright fresh','wainwright wanderer'],'hobgoblin':['hobgoblin gold','hobgoblin ruby','hobgoblin ipa','hobgoblin king','hobgoblin session'],'thwaites':['thwaites smooth','thwaites'],'camden':['camden pale','camden stout','camden hells'],'hells':['camden hells','hells lager'],'neck oil':['neck oil'],'london pride':['london pride','fullers london pride'],'ghost ship':['ghost ship','adnams ghost ship'],'landlord':['landlord','timothy taylors landlord'],'tribute':['tribute'],'thatchers':['thatchers gold','thatchers juicy','thatchers apple'],'aspall':['aspall cyder'],'rekorderlig':['rekorderlig'],'old mout':['old mout berries','old mout kiwi'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'somersby':['somersby apple','somersby blackberry'],'magners':['magners original','magners dark'],'bulmers':['bulmers original','bulmers red'],'inch':['inchs cider'],'henry westons':['henry westons'],'pepsi':['pepsi max','pepsi cola','diet pepsi','pepsi'],'coke':['coca cola','diet coke','coca-cola'],'coca cola':['coca cola','coca-cola','diet coke'],'fentimans':['fentimans'],'red bull':['red bull'],'fever tree':['fever-tree','fever tree'],'britvic':['britvic'],'7up':['7up zero','7up free','7up'],'j2o':['j2o'],'schweppes':['schweppes'],'smirnoff':['smirnoff red','smirnoff vodka','smirnoff'],'gordons':['gordons gin','gordons pink','gordons'],'gordon':['gordons gin','gordons pink'],'tanqueray':['tanqueray gin','tanqueray no10','tanqueray'],'bacardi':['bacardi blanca','bacardi spiced','bacardi oro','bacardi'],'captain morgan':['captain morgan','capt morgan'],'jack daniels':['jack daniels','jack daniel'],'jameson':['jameson irish','jameson'],'baileys':['baileys irish','baileys'],'malibu':['malibu coconut','malibu'],'absolut':['absolut vodka','absolut blue','absolut citron','absolut'],'grey goose':['grey goose'],'hendricks':['hendricks gin','hendricks'],'bombay':['bombay sapphire','bombay premier','bombay'],'prosecco':['prosecco','spumante'],'champagne':['champagne','brut','moet','taittinger','lanson','bollinger','veuve'],'moet':['moet chandon'],'taittinger':['taittinger brut','taittinger'],'merlot':['merlot'],'sauvignon':['sauvignon blanc'],'pinot':['pinot grigio','pinot noir'],'chardonnay':['chardonnay'],'rioja':['rioja'],'malbec':['malbec'],'rose':['rose','rosato','rosado'],'au vodka':['au vodka'],'wkd':['wkd blue','wkd orange'],'vk':['vk blue','vk ice','vk orange'],'hooch':['hooch lemon','hooch peach','hooch tropical','hooch cherry'],'aperol':['aperol spritz','aperol'],'breezer':['breezer lime','breezer orange','breezer watermelon'],'banks':['banks amber','banks original','banks mild','banks barley'],'bombardier':['bombardier amber'],'brakspear':['brakspear gravity','brakspear oxford'],'courage':['courage best','courage directors'],'greene king':['greene king ipa','abbot ale','gk ipa'],'gk':['greene king ipa','gk ipa'],'abbot':['abbot ale','greene king abbot'],'murphys':['murphys irish stout'],'asahi':['asahi super dry','asahi'],'estrella':['estrella damm'],'modelo':['modelo especial'],'blue moon':['blue moon'],'old speckled hen':['old speckled hen'],'pedigree':['marstons pedigree'],'marstons':['marstons pedigree','marstons smooth'],'tetley':['tetley bitter','tetley smooth','tetleys'],'john smiths':['john smiths extra smooth','john smiths'],'theakston':['theakston best','theakston dark','theakstons'],'black sheep':['black sheep bitter','black sheep blonde'],'timothy taylor':['timothy taylors landlord','timothy taylor'],'adnams':['ghost ship','adnams'],'wadworth':['wadworth 6x'],'butcombe':['butcombe original','butcombe gold','butcombe bitter'],'proper job':['proper job ipa'],'erdinger':['erdinger weiss','erdinger weissbier','erdinger dunkel','erdinger brauhaus'],'kahlua':['kahlua coffee','kahlua'],'disaronno':['disaronno amaretto'],'amaretto':['amaretto','disaronno'],'sambuca':['sambuca'],'pimms':['pimms no 1','pimms'],'campari':['campari'],'martini':['martini bianco','martini rosso'],'harrogate':['harrogate still','harrogate sparkling'],'pellegrino':['san pellegrino'],'acqua panna':['acqua panna'],'sapporo':['sapporo premium','sapporo prem'],'holsten':['holsten vier','holsten pils'],'mythos':['mythos'],'shipyard':['shipyard american pale ale','shipyard apa'],'ringwood':['ringwood fortyniner','ringwood razorback'],'mansfield':['mansfield smooth'],'mcewans':['mcewans 70','mcewans 80','mcewans export'],'youngs':['youngs london original','youngs london special','youngs light ale'],'kirkstall':['kirkstall three swords','kirkstall virtuous'],'shindigger':['shindigger mango','shindigger west coast'],'boddingtons':['boddingtons'],'freedom':['freedom premium lager'],'1664':['1664 biere','1664 blanc','1664 00','1664 rose','1664 lager'],'blanc':['1664 blanc'],'biere':['1664 biere'],'gin':['gin'],'vodka':['vodka'],'rum':['rum'],'whisky':['whisky','whiskey','scotch'],'whiskey':['whisky','whiskey'],'tequila':['tequila'],'brandy':['brandy','cognac'],'stout':['stout','guinness','murphys'],'ale':['ale','bitter','pale ale'],'lager':['lager','pilsner'],'pilsner':['pilsner'],'keg':['keg'],'cask':['cask'],'water':['water','still water','sparkling water'],'tonic':['tonic water'],'ginger':['ginger beer','ginger ale'],'lemonade':['lemonade'],'juice':['juice'],'energy':['energy drink','red bull'],'cordial':['cordial'],'squash':['squash']};
 client.on('app.registered', function() {
-  client.invoke('resize', { width: '100%', height: '800px' });
-  setTimeout(function() { client.invoke('resize', { width: '100%', height: '800px' }); }, 300);
-  setTimeout(function() { client.invoke('resize', { width: '100%', height: '800px' }); }, 1000);
+  client.invoke('resize', { width: '100%', height: '600px' });
   startCountdowns();
   setDefaultDate();
 });
@@ -269,6 +295,27 @@ function setDefaultDate() {
 function startCountdowns() {
   updateCountdowns();
   countdownInterval = setInterval(updateCountdowns, 60000);
+}
+function getNextDeliveryDate(dayName) {
+  if (!dayName) return null;
+  var days = {'monday':1,'tuesday':2,'wednesday':3,'thursday':4,'friday':5,'saturday':6,'sunday':0};
+  var target = days[dayName.toLowerCase().trim()];
+  if (target === undefined) return null;
+  var now = new Date();
+  var result = new Date(now);
+  result.setHours(0,0,0,0);
+  var current = result.getDay();
+  var diff = (target - current + 7) % 7;
+  if (diff === 0) diff = 7;
+  result.setDate(result.getDate() + diff);
+  return result;
+}
+function getAddOrderCutoff(deliveryDate) {
+  if (!deliveryDate) return null;
+  var cutoff = new Date(deliveryDate);
+  cutoff.setDate(cutoff.getDate() - 1);
+  cutoff.setHours(11, 0, 0, 0);
+  return cutoff;
 }
 function updateCountdowns() {
   var now = new Date();
@@ -287,6 +334,47 @@ function updateCountdowns() {
   else { sdEl.textContent = 'Closed today'; sdEl.className = 'delivery-option-countdown closed'; hEl.textContent = ''; }
   if (nd) { ndEl.textContent = nd.text; ndEl.className = 'delivery-option-countdown' + (nd.urgent ? ' urgent' : ''); }
   else { ndEl.textContent = 'Closed today'; ndEl.className = 'delivery-option-countdown closed'; }
+  updateAddOrderCountdown();
+}
+function updateAddOrderCountdown() {
+  var el = document.getElementById('addorder-countdown');
+  var infoEl = document.getElementById('add-order-info');
+  if (!accountDetailsRecord) {
+    el.textContent = 'Confirm account';
+    el.className = 'delivery-option-countdown';
+    addOrderCutoffPassed = false;
+    return;
+  }
+  var deliveryDay = accountDetailsRecord.custom_object_fields.delivery_day_ || '';
+  var nextDelivery = getNextDeliveryDate(deliveryDay);
+  if (!nextDelivery) {
+    el.textContent = 'No day set';
+    el.className = 'delivery-option-countdown warning';
+    return;
+  }
+  var cutoff = getAddOrderCutoff(nextDelivery);
+  var now = new Date();
+  var msLeft = cutoff - now;
+  if (msLeft <= 0) {
+    addOrderCutoffPassed = true;
+    el.textContent = 'Cut-off passed';
+    el.className = 'delivery-option-countdown closed';
+    document.getElementById('opt-addorder').classList.add('cutoff-passed');
+    if (selectedDelivery === 'add_order') infoEl.classList.add('visible');
+  } else {
+    addOrderCutoffPassed = false;
+    document.getElementById('opt-addorder').classList.remove('cutoff-passed');
+    infoEl.classList.remove('visible');
+    var totalMinsLeft = Math.floor(msLeft / 60000);
+    var h = Math.floor(totalMinsLeft / 60); var m = totalMinsLeft % 60;
+    var timeText = h > 0 ? h + 'h ' + m + 'm left' : m + 'm left';
+    var cutoffDay = cutoff.toDateString();
+    var today = now.toDateString();
+    var tomorrow = new Date(now); tomorrow.setDate(tomorrow.getDate() + 1);
+    var prefix = cutoffDay === today ? 'Today 11am: ' : (cutoffDay === tomorrow.toDateString() ? 'Tomorrow 11am: ' : cutoff.toLocaleDateString('en-GB',{weekday:'short'}) + ' 11am: ');
+    el.textContent = prefix + timeText;
+    el.className = 'delivery-option-countdown' + (totalMinsLeft <= 60 ? ' urgent' : '');
+  }
 }
 function getTimestamp() {
   var now = new Date();
@@ -307,20 +395,47 @@ document.getElementById('search-input').addEventListener('input', onSearch);
 document.getElementById('search-input').addEventListener('focus', onSearchFocus);
 document.getElementById('opt-nextday').addEventListener('click', function() { selectDelivery('next_day'); });
 document.getElementById('opt-sameday').addEventListener('click', function() { selectDelivery('same_day'); });
-document.getElementById('delivery-date').addEventListener('change', function() { validateDeliveryDate(); resetConfirm(); updateOrderSummary(); updateTicketField(); });
-document.getElementById('confirm-checkbox').addEventListener('change', function() {
-  var btn = document.getElementById('submit-btn');
-  if (this.checked && orderItems.length > 0 && validateDeliveryDate()) { btn.disabled = false; btn.classList.add('active'); }
-  else { btn.disabled = true; btn.classList.remove('active'); }
+document.getElementById('opt-addorder').addEventListener('click', function() { selectDelivery('add_order'); });
+document.getElementById('add-order-override').addEventListener('change', function() {
+  addOrderOverride = this.checked;
+  updateSubmitButton();
 });
+document.getElementById('delivery-date').addEventListener('change', function() { validateDeliveryDate(); resetConfirm(); updateOrderSummary(); updateTicketField(); });
+document.getElementById('confirm-checkbox').addEventListener('change', updateSubmitButton);
 document.getElementById('submit-btn').addEventListener('click', function() { if (!this.disabled) submitOrder(); });
 document.querySelectorAll('.tab').forEach(function(tab) { tab.addEventListener('click', function() { setTab(tab); }); });
 document.addEventListener('click', function(e) { if (!document.getElementById('search-wrap').contains(e.target)) closeDropdown(); });
+function updateSubmitButton() {
+  var btn = document.getElementById('submit-btn');
+  var checked = document.getElementById('confirm-checkbox').checked;
+  var hasItems = orderItems.length > 0;
+  var dateValid = validateDeliveryDate();
+  if (selectedDelivery === 'add_order' && addOrderCutoffPassed && !addOrderOverride) {
+    btn.disabled = true; btn.classList.remove('active','depot-pending'); return;
+  }
+  if (checked && hasItems && dateValid) {
+    btn.disabled = false;
+    if (selectedDelivery === 'add_order' && addOrderCutoffPassed && addOrderOverride) {
+      btn.classList.remove('active'); btn.classList.add('depot-pending');
+      btn.textContent = 'Request depot availability';
+    } else {
+      btn.classList.add('active'); btn.classList.remove('depot-pending');
+      btn.textContent = 'Submit my order';
+    }
+  } else {
+    btn.disabled = true; btn.classList.remove('active','depot-pending');
+    btn.textContent = 'Submit my order';
+  }
+}
 function selectDelivery(type) {
   selectedDelivery = type;
   document.getElementById('opt-nextday').classList.toggle('selected', type === 'next_day');
   document.getElementById('opt-sameday').classList.toggle('selected', type === 'same_day');
-  resetConfirm(); updateOrderSummary(); updateTicketField();
+  document.getElementById('opt-addorder').classList.toggle('selected', type === 'add_order');
+  var infoEl = document.getElementById('add-order-info');
+  if (type === 'add_order' && addOrderCutoffPassed) infoEl.classList.add('visible');
+  else infoEl.classList.remove('visible');
+  resetConfirm(); updateOrderSummary(); updateTicketField(); updateSubmitButton();
 }
 function validateDeliveryDate() {
   var val = document.getElementById('delivery-date').value;
@@ -381,6 +496,7 @@ function validateAccount() {
     accountValidated = true;
     showAccountConfirmed(validatedAccount);
     document.getElementById('delivery-panel').style.display = 'block';
+    updateAddOrderCountdown();
     loadProducts();
   }).catch(function() {
     showAccountStatus('error', 'Could not look up account. Please try again or call us on 0800 587 0773.');
@@ -419,6 +535,7 @@ function showAccountStatus(type, msg) {
 function changeAccount() {
   accountValidated = false; validatedAccount = null; accountDetailsRecord = null;
   allProducts = []; orderItems = []; selectedDelivery = 'next_day'; orderTimestamp = null;
+  addOrderCutoffPassed = false; addOrderOverride = false;
   document.getElementById('account-input').value = '';
   document.getElementById('requester-name').value = '';
   document.getElementById('requester-postcode').value = '';
@@ -433,9 +550,12 @@ function changeAccount() {
   document.getElementById('confirm-section').style.display = 'none';
   document.getElementById('order-summary-panel').style.display = 'none';
   document.getElementById('confirmation-screen').style.display = 'none';
+  document.getElementById('add-order-info').classList.remove('visible');
+  document.getElementById('add-order-override').checked = false;
   document.getElementById('status-bar').className = 'status-bar';
   document.getElementById('opt-nextday').classList.add('selected');
   document.getElementById('opt-sameday').classList.remove('selected');
+  document.getElementById('opt-addorder').classList.remove('selected');
   resetConfirm(); renderOrder(); setDefaultDate();
 }
 function loadProducts() {
@@ -513,7 +633,8 @@ function onSearch() {
   if (!accountValidated) return;
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(function() {
-    var query = document.getElementById('search-input').value.trim().toLowerCase();
+    var query = document.
+getElementById('search-input').value.trim().toLowerCase();
     if (query.length < 1) { if (activeCategory !== 'all') showCategoryBrowse(); else closeDropdown(); cancelAdd(); return; }
     var results = allProducts.filter(function(p) {
       return matchesSearch(p, query) && (activeCategory === 'all' || p.category === activeCategory);
@@ -584,6 +705,7 @@ function renderOrder() {
   container.querySelectorAll('.oi-remove').forEach(function(btn) { btn.addEventListener('click', function() { removeItem(parseInt(btn.getAttribute('data-idx'))); }); });
   updateOrderValueBar(); updateOrderSummary();
   document.getElementById('confirm-section').style.display = 'block';
+  updateSubmitButton();
 }
 function updateOrderValueBar() {
   var total = orderItems.reduce(function(t, i) { return t + i.qty; }, 0);
@@ -599,23 +721,23 @@ function updateOrderValueBar() {
 function updateOrderSummary() {
   var panel = document.getElementById('order-summary-panel');
   if (orderItems.length === 0) { panel.style.display = 'none'; return; }
-  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day (£40.00)' : 'Next Day';
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day (£40.00)' : selectedDelivery === 'add_order' ? 'Add to Existing Order' : 'Next Day';
   var dateVal = document.getElementById('delivery-date').value || 'Not selected';
+  var deliveryDay = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.delivery_day_ || '') : '';
   panel.style.display = 'block';
   panel.innerHTML = '<div class="order-summary-title">Order summary</div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Placed by</span><span class="order-summary-value">' + esc(getRequesterName() || 'Not provided') + '</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Delivery type</span><span class="order-summary-value">' + deliveryLabel + '</span></div>' +
+    (deliveryDay && selectedDelivery === 'add_order' ? '<div class="order-summary-row"><span class="order-summary-label">Scheduled day</span><span class="order-summary-value">' + deliveryDay + '</span></div>' : '') +
     '<div class="order-summary-row"><span class="order-summary-label">Delivery date</span><span class="order-summary-value">' + dateVal + '</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Items</span><span class="order-summary-value">' + orderItems.length + ' product' + (orderItems.length !== 1 ? 's' : '') + '</span></div>' +
     (validatedAccount && validatedAccount.postcode_mismatch ? '<div class="order-summary-row"><span class="order-summary-label" style="color:#CC0000;">Postcode</span><span class="order-summary-value" style="color:#CC0000;">Mismatch - manual review</span></div>' : '');
 }
 function resetConfirm() {
-  is that complete?
-No, cut off again. Here is the final section — paste this directly after document.getElementById('confirm-checkbox').checked = false:
-
-;
+  document.getElementById('confirm-checkbox').checked = false;
   document.getElementById('submit-btn').disabled = true;
-  document.getElementById('submit-btn').classList.remove('active');
+  document.getElementById('submit-btn').classList.remove('active', 'depot-pending');
+  document.getElementById('submit-btn').textContent = 'Submit my order';
 }
 function changeQty(idx, delta) {
   orderItems[idx].qty += delta;
@@ -630,7 +752,7 @@ function submitOrder() {
   if (!validateDeliveryDate()) return;
   orderTimestamp = getTimestamp();
   var btn = document.getElementById('submit-btn');
-  btn.disabled = true; btn.classList.remove('active'); btn.textContent = 'Submitting...';
+  btn.disabled = true; btn.classList.remove('active', 'depot-pending'); btn.textContent = 'Submitting...';
   var venueName = validatedAccount ? (validatedAccount.name || '') : '';
   var accountNumber = validatedAccount ? (validatedAccount.account_number || '') : '';
   var requesterName = getRequesterName();
@@ -641,7 +763,9 @@ function submitOrder() {
   var timeWindowStart = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_start || '') : '';
   var timeWindowEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
   var planningGroup = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.planning_group_ || '') : '';
-  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
+  var isDepotRequest = selectedDelivery === 'add_order' && addOrderCutoffPassed && addOrderOverride;
+  var isPostcodeMismatch = validatedAccount && validatedAccount.postcode_mismatch;
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : selectedDelivery === 'add_order' ? 'Add to Existing Order' : 'Next Day';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
   var specialInstructions = document.getElementById('special-instructions').value.trim();
   var bulletLines = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
@@ -658,9 +782,11 @@ function submitOrder() {
     + (selectedDelivery === 'same_day' ? '\nDelivery charge: £40.00' : '')
     + '\nOrder submitted: ' + orderTimestamp
     + (specialInstructions ? '\n\nSpecial instructions: ' + specialInstructions : '')
+    + (isDepotRequest ? '\n\nNote: Cut-off time has passed. Depot availability check requested.' : '')
     + '\n\nOur team will be in touch to confirm your delivery. If you need to make any changes, please reply to this message or call us on 0800 587 0773.';
   var internalNote = 'FAST DELIVERY ORDER - ACTION REQUIRED\n\n'
-    + (validatedAccount && validatedAccount.postcode_mismatch ? 'FLAG: POSTCODE MISMATCH - MANUAL REVIEW REQUIRED\n\n' : '')
+    + (isDepotRequest ? 'ADD TO ORDER - CUT-OFF PASSED - DEPOT AVAILABILITY CHECK NEEDED\n\n' : '')
+    + (isPostcodeMismatch ? 'FLAG: POSTCODE MISMATCH - MANUAL REVIEW REQUIRED\n\n' : '')
     + 'Venue: ' + venueName + '\nAccount: ' + accountNumber
     + '\nRequested by: ' + requesterName + '\nPostcode: ' + postcode
     + '\nDepot: ' + depotName + (shipTo ? '\nShip-to: ' + shipTo : '')
@@ -673,11 +799,14 @@ function submitOrder() {
     + '\nOrder submitted: ' + orderTimestamp
     + (specialInstructions ? '\nSpecial instructions: ' + specialInstructions : '')
     + '\n\nItems ordered:\n' + bulletLines
-    + '\n\nNext steps:\n1. Check availability at ' + depotName + ' depot\n2. Confirm payment with the credit team\n3. Pass to the depot planner to schedule delivery'
-    + '\n\nUpload reference:\n' + csvHeader + '\n' + csvRows;
+    + '\n\nNext steps:\n'
+    + (isDepotRequest ? '1. Contact depot (' + (planningGroup || depotName) + ') to check availability for next delivery\n2. Confirm with customer before processing\n' : '1. Check availability at ' + depotName + ' depot\n2. Confirm payment with the credit team\n3. Pass to the depot planner to schedule delivery\n')
+    + '\nUpload reference:\n' + csvHeader + '\n' + csvRows;
   client.set('ticket.comment.text', publicNote + '\n\n---INTERNAL---\n\n' + internalNote);
   var tags = ['fast-delivery-order'];
-  if (validatedAccount && validatedAccount.postcode_mismatch) tags.push('fast-delivery-review', 'fast-delivery-postcode-mismatch');
+  if (isDepotRequest) tags.push('fast-delivery-depot-check', 'fast-delivery-add-order-late');
+  if (selectedDelivery === 'add_order' && !addOrderCutoffPassed) tags.push('fast-delivery-add-order');
+  if (isPostcodeMismatch) tags.push('fast-delivery-review', 'fast-delivery-postcode-mismatch');
   client.get('ticket.tags').then(function(data) {
     var existing = (data['ticket.tags'] || []);
     var merged = existing.concat(tags.filter(function(t) { return existing.indexOf(t) === -1; }));
@@ -693,6 +822,18 @@ function submitOrder() {
     var confItems = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
     document.getElementById('confirmation-items').textContent = confItems;
     document.getElementById('confirmation-ref').textContent = 'Reference: FD-' + Date.now().toString().slice(-6) + ' | Submitted: ' + orderTimestamp;
+    var iconEl = document.getElementById('confirmation-icon');
+    var titleEl = document.getElementById('confirmation-title');
+    var msgEl = document.getElementById('confirmation-msg');
+    if (isDepotRequest) {
+      iconEl.className = 'confirmation-icon pending'; iconEl.textContent = '!';
+      titleEl.className = 'confirmation-title pending'; titleEl.textContent = 'Depot check requested';
+      msgEl.innerHTML = 'The cut-off time has passed. A request has been raised to check depot availability for the next delivery.<br><br>The team will be in touch to confirm. If you have any questions, please call us on <strong>0800 587 0773</strong>.';
+    } else {
+      iconEl.className = 'confirmation-icon'; iconEl.textContent = 'OK';
+      titleEl.className = 'confirmation-title'; titleEl.textContent = 'Order received';
+      msgEl.innerHTML = 'Your Fast Delivery order has been received and is being processed by our team.<br><br>You will receive a confirmation shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.';
+    }
     document.getElementById('confirmation-screen').style.display = 'block';
     document.getElementById('status-bar').className = 'status-bar';
     if (countdownInterval) clearInterval(countdownInterval);
@@ -709,7 +850,7 @@ function updateTicketField() {
   var deliveryDay = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.delivery_day_ || '') : '';
   var timeWindowStart = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_start || '') : '';
   var timeWindowEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
-  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
+  var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : selectedDelivery === 'add_order' ? 'Add to Existing Order' : 'Next Day';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
   var specialInstructions = document.getElementById('special-instructions').value.trim();
   var timestamp = orderTimestamp || getTimestamp();
@@ -747,4 +888,3 @@ function showStatus(msg, isWarning) {
 </script>
 </body>
 </html>
-                          
