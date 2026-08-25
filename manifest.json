@@ -6,7 +6,7 @@
   },
   "defaultLocale": "en",
   "private": true,
-  "version": "1.2.1",
+  "version": "1.2.2",
   "frameworkVersion": "2.0",
   "location": {
     "support": {
@@ -16,6 +16,20 @@
       "new_ticket_sidebar": {
         "url": "assets/index.html"
       }
+    }
+  },
+  "requests": {
+    "fdcustomeraccount_search": {
+      "url": "https://carlsbergmarstons.zendesk.com/api/v2/custom_objects/fdcustomeraccount/records/search",
+      "type": "GET"
+    },
+    "account_details_search": {
+      "url": "https://carlsbergmarstons.zendesk.com/api/v2/custom_objects/account_details/records/search",
+      "type": "GET"
+    },
+    "cb_product_records": {
+      "url": "https://carlsbergmarstons.zendesk.com/api/v2/custom_objects/cb_product/records",
+      "type": "GET"
     }
   }
 }
