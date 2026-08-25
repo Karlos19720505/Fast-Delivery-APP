@@ -405,7 +405,7 @@ function loadProducts() {
     allProducts = [];
     allRecords.forEach(function(p) {
       var sku = p.custom_object_fields.sku || p.id;
-      var name = p.custom_object_fields.name || '';
+      var name = p.name || p.custom_object_fields.name || '';
       if (!name || name.length < 3) return;
       if (seenSkus[sku]) return;
       seenSkus[sku] = true;
