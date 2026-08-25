@@ -1,10 +1,3 @@
-App details Version: 1.2.2 Framework Version: 2.0 Installed: August 25, 2026 Contact Us: karl.morton@carlsbergmarstons.co.uk Location: Ticket, New Ticket
-The version is 1.2.2 which is the latest. The syntax error on line 794 is the problem — the file got corrupted during one of the pastes.
-
-Go with Option A first — get it working cleanly with Next Day and Same Day, then we add the third option carefully once it's confirmed working.
-
-Here is the complete, clean, single-paste HTML. Delete everything in your assets/index.html and replace with this entire block in one go:
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -402,9 +395,13 @@ function showAccountConfirmed(account) {
   var depot = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.depot_ || '') : '';
   var shipTo = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.ship_to_number || '') : '';
   var timeStart = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_start || '') : '';
-var timeEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
-var timeWindow = timeStart ? timeStart.substring(0,5) + (timeEnd ? ' - ' + timeEnd.substring(0,5) : '') : '';
-document.getElementById('confirmed-meta').text
+  var timeEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
+  var timeWindow = timeStart ? timeStart.substring(0,5) + (timeEnd ? ' - ' + timeEnd.substring(0,5) : '') : '';
+  var metaParts = [];
+  if (depot) metaParts.push(depot);
+  if (shipTo) metaParts.push('Ship-to: ' + shipTo);
+  if (timeWindow) metaParts.push('Window: ' + timeWindow);
+  document.getElementById('confirmed-meta').textContent = metaParts.join(' | ');
   var deliveryDay = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.delivery_day_ || '') : '';
   var ddEl = document.getElementById('confirmed-delivery-day');
   if (deliveryDay) {
@@ -612,7 +609,10 @@ function updateOrderSummary() {
     (validatedAccount && validatedAccount.postcode_mismatch ? '<div class="order-summary-row"><span class="order-summary-label" style="color:#CC0000;">Postcode</span><span class="order-summary-value" style="color:#CC0000;">Mismatch - manual review</span></div>' : '');
 }
 function resetConfirm() {
-  document.getElementById('confirm-checkbox').checked = false;
+  is that complete?
+No, cut off again. Here is the final section — paste this directly after document.getElementById('confirm-checkbox').checked = false:
+
+;
   document.getElementById('submit-btn').disabled = true;
   document.getElementById('submit-btn').classList.remove('active');
 }
@@ -625,8 +625,7 @@ function removeItem(idx) {
   orderItems.splice(idx, 1);
   renderOrder(); updateTicketField(); resetConfirm();
 }
-function submitOrder()
-{
+function submitOrder() {
   if (!validateDeliveryDate()) return;
   orderTimestamp = getTimestamp();
   var btn = document.getElementById('submit-btn');
@@ -640,13 +639,14 @@ function submitOrder()
   var deliveryDay = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.delivery_day_ || '') : '';
   var timeWindowStart = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_start || '') : '';
   var timeWindowEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
+  var planningGroup = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.planning_group_ || '') : '';
   var deliveryLabel = selectedDelivery === 'same_day' ? 'Same Day' : 'Next Day';
   var deliveryDate = document.getElementById('delivery-date').value || 'Not specified';
   var specialInstructions = document.getElementById('special-instructions').value.trim();
   var bulletLines = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
   var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Ship_To,Delivery_Type,Delivery_Day,Delivery_Date,Time_Window,Delivery_Charge,Order_Timestamp,Product_SKU,Product_Name,Quantity';
   var csvRows = orderItems.map(function(item) {
-    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', postcode, depotName, shipTo, deliveryLabel, deliveryDay, deliveryDate, timeWindowStart + (timeWindowEnd ? '-' + timeWindowEnd : ''), selectedDelivery === 'same_day' ? '40.00' : '0.00', '"' + orderTimestamp + '"', item.sku || '', '"' + item.name + '"', item.qty].join(',');
+    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', postcode, depotName, shipTo, deliveryLabel, deliveryDay, deliveryDate, timeWindowStart.substring(0,5) + (timeWindowEnd ? '-' + timeWindowEnd.substring(0,5) : ''), selectedDelivery === 'same_day' ? '40.00' : '0.00', '"' + orderTimestamp + '"', item.sku || '', '"' + item.name + '"', item.qty].join(',');
   }).join('\n');
   var greeting = venueName ? 'Hi ' + venueName + ',' : 'Hi,';
   var publicNote = greeting + '\n\nThank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n'
@@ -663,10 +663,11 @@ function submitOrder()
     + 'Venue: ' + venueName + '\nAccount: ' + accountNumber
     + '\nRequested by: ' + requesterName + '\nPostcode: ' + postcode
     + '\nDepot: ' + depotName + (shipTo ? '\nShip-to: ' + shipTo : '')
+    + (planningGroup ? '\nPlanning group: ' + planningGroup : '')
     + '\nDelivery type: ' + deliveryLabel
     + '\nScheduled delivery day: ' + (deliveryDay || 'Not set')
     + '\nRequested date: ' + deliveryDate
-    + (timeWindowStart ? '\nTime window: ' + timeWindowStart + (timeWindowEnd ? ' - ' + timeWindowEnd : '') : '')
+    + (timeWindowStart ? '\nTime window: ' + timeWindowStart.substring(0,5) + (timeWindowEnd ? ' - ' + timeWindowEnd.substring(0,5) : '') : '')
     + (selectedDelivery === 'same_day' ? '\nDelivery charge: £40.00' : '')
     + '\nOrder submitted: ' + orderTimestamp
     + (specialInstructions ? '\nSpecial instructions: ' + specialInstructions : '')
@@ -714,7 +715,7 @@ function updateTicketField() {
   var bulletLines = orderItems.map(function(item) { return '- ' + item.name + ' x ' + item.qty; }).join('\n');
   var csvHeader = 'Account_Number,Customer_Name,Requester_Name,Delivery_Postcode,Depot,Ship_To,Delivery_Type,Delivery_Day,Delivery_Date,Time_Window,Delivery_Charge,Order_Timestamp,Product_SKU,Product_Name,Quantity';
   var csvRows = orderItems.map(function(item) {
-    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', postcode, depotName, shipTo, deliveryLabel, deliveryDay, deliveryDate, timeWindowStart + (timeWindowEnd ? '-' + timeWindowEnd : ''), selectedDelivery === 'same_day' ? '40.00' : '0.00', '"' + timestamp + '"', item.sku || '', '"' + item.name + '"', item.qty].join(',');
+    return [accountNumber, '"' + venueName + '"', '"' + requesterName + '"', postcode, depotName, shipTo, deliveryLabel, deliveryDay, deliveryDate, timeWindowStart.substring(0,5) + (timeWindowEnd ? '-' + timeWindowEnd.substring(0,5) : ''), selectedDelivery === 'same_day' ? '40.00' : '0.00', '"' + timestamp + '"', item.sku || '', '"' + item.name + '"', item.qty].join(',');
   }).join('\n');
   var greeting = venueName ? 'Hi ' + venueName + ',' : 'Hi,';
   var publicNote = greeting + '\n\nThank you for your Fast Delivery order. Here is a summary of what you have requested:\n\n'
@@ -728,7 +729,7 @@ function updateTicketField() {
     + '\nRequested by: ' + requesterName + '\nPostcode: ' + postcode + '\nDepot: ' + depotName
     + (shipTo ? '\nShip-to: ' + shipTo : '') + '\nDelivery type: ' + deliveryLabel
     + '\nScheduled delivery day: ' + (deliveryDay || 'Not set') + '\nRequested date: ' + deliveryDate
-    + (timeWindowStart ? '\nTime window: ' + timeWindowStart + (timeWindowEnd ? ' - ' + timeWindowEnd : '') : '')
+    + (timeWindowStart ? '\nTime window: ' + timeWindowStart.substring(0,5) + (timeWindowEnd ? ' - ' + timeWindowEnd.substring(0,5) : '') : '')
     + '\nOrder submitted: ' + timestamp
     + (specialInstructions ? '\nSpecial instructions: ' + specialInstructions : '')
     + '\n\nItems ordered:\n' + bulletLines
@@ -745,4 +746,4 @@ function showStatus(msg, isWarning) {
 </script>
 </body>
 </html>
-
+                          
