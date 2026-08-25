@@ -9,7 +9,6 @@
 body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; background: #F7F7F7; }
 .app-header { background: #00703C; color: #fff; padding: 8px 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .app-header-logo { display: flex; align-items: center; gap: 8px; }
-.app-header-logo img { height: 28px; width: auto; }
 .app-header-title { font-size: 13px; font-weight: 700; color: #fff; }
 .app-header-countdown { font-size: 12px; font-weight: 700; opacity: 0.95; white-space: nowrap; }
 .account-panel { background: #fff; border: 1px solid #EBEBEB; margin: 6px; border-radius: 6px; padding: 8px; }
@@ -119,15 +118,12 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 </style>
 </head>
 <body>
-
 <div class="app-header">
 <div class="app-header-logo">
-<span class="app-header-title">Carlsberg Br/hc/theming_assets/01JJPMAPBBZHSMTTEZ48EYSRHE" alt="Carlsberg Britvic" onerror="this.style.display='none'"/>
-<span class="app-header-title">Fast Delivery</span>
+<span class="app-header-title">Carlsberg Britvic</span>
 </div>
 <span class="app-header-countdown" id="header-countdown"></span>
 </div>
-
 <div class="account-panel" id="account-panel">
 <div class="account-panel-title">Step 1 - Your details</div>
 <div class="field-row">
@@ -154,7 +150,6 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <button class="change-account" id="change-account-btn">Change details</button>
 </div>
 </div>
-
 <div class="delivery-panel" id="delivery-panel">
 <div class="delivery-panel-title">Step 2 - Choose delivery</div>
 <div class="delivery-options">
@@ -177,7 +172,6 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <div class="date-error" id="date-error"></div>
 </div>
 </div>
-
 <div id="product-section" style="display:none;">
 <div class="tabs">
 <div class="tab active" data-cat="all">All</div>
@@ -195,9 +189,7 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <div class="dropdown" id="dropdown"></div>
 </div>
 <div class="add-row" id="add-row">
-<div>
-<div class="sel-name" id="sel-name"></div>
-</div>
+<div><div class="sel-name" id="sel-name"></div></div>
 <input type="number" class="qty-input" id="qty-input" value="1" min="1" max="999"/>
 <button class="add-item-btn" id="add-item-btn">Add</button>
 <button class="cancel-btn" id="cancel-btn">Cancel</button>
@@ -207,48 +199,30 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <span class="spinner"></span> Loading products...
 </div>
 </div>
-
 <div class="order-section" id="order-section" style="display:none;">
-<div class="order-header">
-Your order
-<span class="order-count" id="order-count">0</span>
-</div>
-<div id="order-items">
-<div class="order-empty">No products added yet.</div>
-</div>
+<div class="order-header">Your order<span class="order-count" id="order-count">0</span></div>
+<div id="order-items"><div class="order-empty">No products added yet.</div></div>
 <div class="order-value-bar" id="order-value-bar" style="display:none;">
-<div class="order-value-track">
-<div class="order-value-fill" id="order-value-fill" style="width:0%"></div>
-</div>
+<div class="order-value-track"><div class="order-value-fill" id="order-value-fill" style="width:0%"></div></div>
 <div class="order-value-label" id="order-value-label"></div>
 </div>
 </div>
-
 <div class="order-summary-panel" id="order-summary-panel"></div>
-
 <div class="confirm-section" id="confirm-section">
 <div class="confirm-check-row">
 <input type="checkbox" id="confirm-checkbox"/>
-<label class="confirm-check-label" for="confirm-checkbox">
-I have checked my order and confirm that the products and quantities listed above are correct and ready to be processed.
-</label>
+<label class="confirm-check-label" for="confirm-checkbox">I have checked my order and confirm that the products and quantities listed above are correct and ready to be processed.</label>
 </div>
 <button class="submit-btn" id="submit-btn" disabled>Submit my order</button>
 </div>
-
 <div class="confirmation-screen" id="confirmation-screen">
 <div class="confirmation-icon">OK</div>
 <div class="confirmation-title">Order received</div>
 <div class="confirmation-ref" id="confirmation-ref"></div>
 <div class="confirmation-items" id="confirmation-items"></div>
-<div class="confirmation-msg">
-Your Fast Delivery order has been received and is being processed by our team.<br><br>
-You will receive a confirmation email shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.
+<div class="confirmation-msg">Your Fast Delivery order has been received and is being processed by our team.<br><br>You will receive a confirmation email shortly. If you need to make any changes or have any questions, please call us on <strong>0800 587 0773</strong>.</div>
 </div>
-</div>
-
 <div class="status-bar" id="status-bar"></div>
-
 <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
 <script>
 var client = ZAFClient.init();
@@ -262,167 +236,13 @@ var validatedAccount = null;
 var selectedDelivery = 'next_day';
 var countdownInterval = null;
 var orderTimestamp = null;
-
-var brandAliases = {
-  'carlsberg': ['carlsberg pilsner', 'carlsberg export', 'carlsberg non', 'carlsberg special'],
-  'brooklyn': ['brooklyn lager', 'brooklyn pilsner', 'brooklyn stonewall', 'brooklyn special', 'brooklyn ground', 'brooklyn bodega', 'brooklyn pulp', 'brooklyn fonio'],
-  'moretti': ['birra moretti', 'moretti'],
-  'stella': ['stella artois'],
-  'guinness': ['guinness draught', 'guinness original', 'guinness 0.0', 'guinness micro', 'guinness surger'],
-  'madri': ['madri excepcional'],
-  'fosters': ['fosters'],
-  'carling': ['carling'],
-  'doom bar': ['doom bar'],
-  'strongbow': ['strongbow dark', 'strongbow original', 'strongbow strawberry'],
-  'heineken': ['heineken'],
-  'peroni': ['peroni azzurro', 'birra poretti', 'poretti'],
-  'poretti': ['birra poretti', 'poretti'],
-  'san miguel': ['san miguel'],
-  'corona': ['corona extra'],
-  'budweiser': ['budweiser'],
-  'amstel': ['amstel lager'],
-  'coors': ['coors'],
-  'wainwright': ['wainwright golden', 'wainwright amber', 'wainwright gold', 'wainwright fresh', 'wainwright wanderer'],
-  'hobgoblin': ['hobgoblin gold', 'hobgoblin ruby', 'hobgoblin ipa', 'hobgoblin king', 'hobgoblin session'],
-  'thwaites': ['thwaites smooth', 'thwaites'],
-  'camden': ['camden pale', 'camden stout', 'camden hells'],
-  'hells': ['camden hells', 'hells lager'],
-  'neck oil': ['neck oil'],
-  'london pride': ['london pride', 'fullers london pride'],
-  'ghost ship': ['ghost ship', 'adnams ghost ship'],
-  'landlord': ['landlord', 'timothy taylors landlord'],
-  'tribute': ['tribute'],
-  'thatchers': ['thatchers gold', 'thatchers juicy', 'thatchers apple'],
-  'aspall': ['aspall cyder'],
-  'rekorderlig': ['rekorderlig'],
-  'old mout': ['old mout berries', 'old mout kiwi'],
-  'kopparberg': ['kopparberg mixed', 'kopparberg strawberry', 'kopparberg pear'],
-  'somersby': ['somersby apple', 'somersby blackberry'],
-  'magners': ['magners original', 'magners dark'],
-  'bulmers': ['bulmers original', 'bulmers red'],
-  'inch': ['inchs cider'],
-  'henry westons': ['henry westons'],
-  'pepsi': ['pepsi max', 'pepsi cola', 'diet pepsi', 'pepsi'],
-  'coke': ['coca cola', 'diet coke', 'coca-cola'],
-  'coca cola': ['coca cola', 'coca-cola', 'diet coke'],
-  'fentimans': ['fentimans'],
-  'red bull': ['red bull'],
-  'fever tree': ['fever-tree', 'fever tree'],
-  'britvic': ['britvic'],
-  '7up': ['7up zero', '7up free', '7up'],
-  'j2o': ['j2o'],
-  'schweppes': ['schweppes'],
-  'smirnoff': ['smirnoff red', 'smirnoff vodka', 'smirnoff'],
-  'gordons': ['gordons gin', 'gordons pink', 'gordons'],
-  'gordon': ['gordons gin', 'gordons pink'],
-  'tanqueray': ['tanqueray gin', 'tanqueray no10', 'tanqueray'],
-  'bacardi': ['bacardi blanca', 'bacardi spiced', 'bacardi oro', 'bacardi'],
-  'captain morgan': ['captain morgan', 'capt morgan'],
-  'jack daniels': ['jack daniels', 'jack daniel'],
-  'jameson': ['jameson irish', 'jameson'],
-  'baileys': ['baileys irish', 'baileys'],
-  'malibu': ['malibu coconut', 'malibu'],
-  'absolut': ['absolut vodka', 'absolut blue', 'absolut citron', 'absolut'],
-  'grey goose': ['grey goose'],
-  'hendricks': ['hendricks gin', 'hendricks'],
-  'bombay': ['bombay sapphire', 'bombay premier', 'bombay'],
-  'prosecco': ['prosecco', 'spumante'],
-  'champagne': ['champagne', 'brut', 'moet', 'taittinger', 'lanson', 'bollinger', 'veuve'],
-  'moet': ['moet chandon'],
-  'taittinger': ['taittinger brut', 'taittinger'],
-  'merlot': ['merlot'],
-  'sauvignon': ['sauvignon blanc'],
-  'pinot': ['pinot grigio', 'pinot noir'],
-  'chardonnay': ['chardonnay'],
-  'rioja': ['rioja'],
-  'malbec': ['malbec'],
-  'rose': ['rose', 'rosato', 'rosado'],
-  'au vodka': ['au vodka'],
-  'wkd': ['wkd blue', 'wkd orange'],
-  'vk': ['vk blue', 'vk ice', 'vk orange'],
-  'hooch': ['hooch lemon', 'hooch peach', 'hooch tropical', 'hooch cherry'],
-  'aperol': ['aperol spritz', 'aperol'],
-  'breezer': ['breezer lime', 'breezer orange', 'breezer watermelon'],
-  'banks': ['banks amber', 'banks original', 'banks mild', 'banks barley'],
-  'bombardier': ['bombardier amber'],
-  'brakspear': ['brakspear gravity', 'brakspear oxford'],
-  'courage': ['courage best', 'courage directors'],
-  'greene king': ['greene king ipa', 'abbot ale', 'gk ipa'],
-  'gk': ['greene king ipa', 'gk ipa'],
-  'abbot': ['abbot ale', 'greene king abbot'],
-  'murphys': ['murphys irish stout'],
-  'asahi': ['asahi super dry', 'asahi'],
-  'estrella': ['estrella damm'],
-  'modelo': ['modelo especial'],
-  'blue moon': ['blue moon'],
-  'old speckled hen': ['old speckled hen'],
-  'pedigree': ['marstons pedigree'],
-  'marstons': ['marstons pedigree', 'marstons smooth'],
-  'tetley': ['tetley bitter', 'tetley smooth', 'tetleys'],
-  'john smiths': ['john smiths extra smooth', 'john smiths'],
-  'theakston': ['theakston best', 'theakston dark', 'theakstons'],
-  'black sheep': ['black sheep bitter', 'black sheep blonde'],
-  'timothy taylor': ['timothy taylors landlord', 'timothy taylor'],
-  'adnams': ['ghost ship', 'adnams'],
-  'wadworth': ['wadworth 6x'],
-  'butcombe': ['butcombe original', 'butcombe gold', 'butcombe bitter'],
-  'proper job': ['proper job ipa'],
-  'erdinger': ['erdinger weiss', 'erdinger weissbier', 'erdinger dunkel', 'erdinger brauhaus'],
-  'kahlua': ['kahlua coffee', 'kahlua'],
-  'disaronno': ['disaronno amaretto'],
-  'amaretto': ['amaretto', 'disaronno'],
-  'sambuca': ['sambuca'],
-  'pimms': ['pimms no 1', 'pimms'],
-  'campari': ['campari'],
-  'martini': ['martini bianco', 'martini rosso'],
-  'harrogate': ['harrogate still', 'harrogate sparkling'],
-  'pellegrino': ['san pellegrino'],
-  'acqua panna': ['acqua panna'],
-  'sapporo': ['sapporo premium', 'sapporo prem'],
-  'holsten': ['holsten vier', 'holsten pils'],
-  'mythos': ['mythos'],
-  'shipyard': ['shipyard american pale ale', 'shipyard apa'],
-  'ringwood': ['ringwood fortyniner', 'ringwood razorback'],
-  'mansfield': ['mansfield smooth'],
-  'mcewans': ['mcewans 70', 'mcewans 80', 'mcewans export'],
-  'youngs': ['youngs london original', 'youngs london special', 'youngs light ale'],
-  'kirkstall': ['kirkstall three swords', 'kirkstall virtuous'],
-  'shindigger': ['shindigger mango', 'shindigger west coast'],
-  'boddingtons': ['boddingtons'],
-  'freedom': ['freedom premium lager'],
-  '1664': ['1664 biere', '1664 blanc', '1664 00', '1664 rose', '1664 lager'],
-  'blanc': ['1664 blanc'],
-  'biere': ['1664 biere'],
-  'gin': ['gin'],
-  'vodka': ['vodka'],
-  'rum': ['rum'],
-  'whisky': ['whisky', 'whiskey', 'scotch'],
-  'whiskey': ['whisky', 'whiskey'],
-  'tequila': ['tequila'],
-  'brandy': ['brandy', 'cognac'],
-  'stout': ['stout', 'guinness', 'murphys'],
-  'ale': ['ale', 'bitter', 'pale ale'],
-  'lager': ['lager', 'pilsner'],
-  'pilsner': ['pilsner'],
-  'keg': ['keg'],
-  'cask': ['cask'],
-  'water': ['water', 'still water', 'sparkling water'],
-  'tonic': ['tonic water'],
-  'ginger': ['ginger beer', 'ginger ale'],
-  'lemonade': ['lemonade'],
-  'juice': ['juice'],
-  'energy': ['energy drink', 'red bull'],
-  'cordial': ['cordial'],
-  'squash': ['squash']
-};
-
+var brandAliases = {'carlsberg':['carlsberg pilsner','carlsberg export','carlsberg non','carlsberg special'],'brooklyn':['brooklyn lager','brooklyn pilsner','brooklyn stonewall','brooklyn special','brooklyn ground','brooklyn bodega','brooklyn pulp','brooklyn fonio'],'moretti':['birra moretti','moretti'],'stella':['stella artois'],'guinness':['guinness draught','guinness original','guinness 0.0','guinness micro','guinness surger'],'madri':['madri excepcional'],'fosters':['fosters'],'carling':['carling'],'doom bar':['doom bar'],'strongbow':['strongbow dark','strongbow original','strongbow strawberry'],'heineken':['heineken'],'peroni':['peroni azzurro','birra poretti','poretti'],'poretti':['birra poretti','poretti'],'san miguel':['san miguel'],'corona':['corona extra'],'budweiser':['budweiser'],'amstel':['amstel lager'],'coors':['coors'],'wainwright':['wainwright golden','wainwright amber','wainwright gold','wainwright fresh','wainwright wanderer'],'hobgoblin':['hobgoblin gold','hobgoblin ruby','hobgoblin ipa','hobgoblin king','hobgoblin session'],'thwaites':['thwaites smooth','thwaites'],'camden':['camden pale','camden stout','camden hells'],'hells':['camden hells','hells lager'],'neck oil':['neck oil'],'london pride':['london pride','fullers london pride'],'ghost ship':['ghost ship','adnams ghost ship'],'landlord':['landlord','timothy taylors landlord'],'tribute':['tribute'],'thatchers':['thatchers gold','thatchers juicy','thatchers apple'],'aspall':['aspall cyder'],'rekorderlig':['rekorderlig'],'old mout':['old mout berries','old mout kiwi'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'somersby':['somersby apple','somersby blackberry'],'magners':['magners original','magners dark'],'bulmers':['bulmers original','bulmers red'],'inch':['inchs cider'],'henry westons':['henry westons'],'pepsi':['pepsi max','pepsi cola','diet pepsi','pepsi'],'coke':['coca cola','diet coke','coca-cola'],'coca cola':['coca cola','coca-cola','diet coke'],'fentimans':['fentimans'],'red bull':['red bull'],'fever tree':['fever-tree','fever tree'],'britvic':['britvic'],'7up':['7up zero','7up free','7up'],'j2o':['j2o'],'schweppes':['schweppes'],'smirnoff':['smirnoff red','smirnoff vodka','smirnoff'],'gordons':['gordons gin','gordons pink','gordons'],'gordon':['gordons gin','gordons pink'],'tanqueray':['tanqueray gin','tanqueray no10','tanqueray'],'bacardi':['bacardi blanca','bacardi spiced','bacardi oro','bacardi'],'captain morgan':['captain morgan','capt morgan'],'jack daniels':['jack daniels','jack daniel'],'jameson':['jameson irish','jameson'],'baileys':['baileys irish','baileys'],'malibu':['malibu coconut','malibu'],'absolut':['absolut vodka','absolut blue','absolut citron','absolut'],'grey goose':['grey goose'],'hendricks':['hendricks gin','hendricks'],'bombay':['bombay sapphire','bombay premier','bombay'],'prosecco':['prosecco','spumante'],'champagne':['champagne','brut','moet','taittinger','lanson','bollinger','veuve'],'moet':['moet chandon'],'taittinger':['taittinger brut','taittinger'],'merlot':['merlot'],'sauvignon':['sauvignon blanc'],'pinot':['pinot grigio','pinot noir'],'chardonnay':['chardonnay'],'rioja':['rioja'],'malbec':['malbec'],'rose':['rose','rosato','rosado'],'au vodka':['au vodka'],'wkd':['wkd blue','wkd orange'],'vk':['vk blue','vk ice','vk orange'],'hooch':['hooch lemon','hooch peach','hooch tropical','hooch cherry'],'aperol':['aperol spritz','aperol'],'breezer':['breezer lime','breezer orange','breezer watermelon'],'banks':['banks amber','banks original','banks mild','banks barley'],'bombardier':['bombardier amber'],'brakspear':['brakspear gravity','brakspear oxford'],'courage':['courage best','courage directors'],'greene king':['greene king ipa','abbot ale','gk ipa'],'gk':['greene king ipa','gk ipa'],'abbot':['abbot ale','greene king abbot'],'murphys':['murphys irish stout'],'asahi':['asahi super dry','asahi'],'estrella':['estrella damm'],'modelo':['modelo especial'],'blue moon':['blue moon'],'old speckled hen':['old speckled hen'],'pedigree':['marstons pedigree'],'marstons':['marstons pedigree','marstons smooth'],'tetley':['tetley bitter','tetley smooth','tetleys'],'john smiths':['john smiths extra smooth','john smiths'],'theakston':['theakston best','theakston dark','theakstons'],'black sheep':['black sheep bitter','black sheep blonde'],'timothy taylor':['timothy taylors landlord','timothy taylor'],'adnams':['ghost ship','adnams'],'wadworth':['wadworth 6x'],'butcombe':['butcombe original','butcombe gold','butcombe bitter'],'proper job':['proper job ipa'],'erdinger':['erdinger weiss','erdinger weissbier','erdinger dunkel','erdinger brauhaus'],'kahlua':['kahlua coffee','kahlua'],'disaronno':['disaronno amaretto'],'amaretto':['amaretto','disaronno'],'sambuca':['sambuca'],'pimms':['pimms no 1','pimms'],'campari':['campari'],'martini':['martini bianco','martini rosso'],'harrogate':['harrogate still','harrogate sparkling'],'pellegrino':['san pellegrino'],'acqua panna':['acqua panna'],'sapporo':['sapporo premium','sapporo prem'],'holsten':['holsten vier','holsten pils'],'mythos':['mythos'],'shipyard':['shipyard american pale ale','shipyard apa'],'ringwood':['ringwood fortyniner','ringwood razorback'],'mansfield':['mansfield smooth'],'mcewans':['mcewans 70','mcewans 80','mcewans export'],'youngs':['youngs london original','youngs london special','youngs light ale'],'kirkstall':['kirkstall three swords','kirkstall virtuous'],'shindigger':['shindigger mango','shindigger west coast'],'boddingtons':['boddingtons'],'freedom':['freedom premium lager'],'1664':['1664 biere','1664 blanc','1664 00','1664 rose','1664 lager'],'blanc':['1664 blanc'],'biere':['1664 biere'],'gin':['gin'],'vodka':['vodka'],'rum':['rum'],'whisky':['whisky','whiskey','scotch'],'whiskey':['whisky','whiskey'],'tequila':['tequila'],'brandy':['brandy','cognac'],'stout':['stout','guinness','murphys'],'ale':['ale','bitter','pale ale'],'lager':['lager','pilsner'],'pilsner':['pilsner'],'keg':['keg'],'cask':['cask'],'water':['water','still water','sparkling water'],'tonic':['tonic water'],'ginger':['ginger beer','ginger ale'],'lemonade':['lemonade'],'juice':['juice'],'energy':['energy drink','red bull'],'cordial':['cordial'],'squash':['squash']};
 client.on('app.registered', function() {
   client.invoke('resize', { width: '100%', height: '600px' });
   autoFillFromUrl();
   startCountdowns();
   setDefaultDate();
 });
-
 function autoFillFromUrl() {
   try {
     client.get('window.location').then(function(data) {
@@ -434,7 +254,6 @@ function autoFillFromUrl() {
     }).catch(function() {});
   } catch(e) {}
 }
-
 function setDefaultDate() {
   var d = new Date();
   d.setDate(d.getDate() + 1);
@@ -443,12 +262,10 @@ function setDefaultDate() {
   var el = document.getElementById('delivery-date');
   el.min = min; el.value = min;
 }
-
 function startCountdowns() {
   updateCountdowns();
   countdownInterval = setInterval(updateCountdowns, 60000);
 }
-
 function updateCountdowns() {
   var now = new Date();
   var totalMins = now.getHours() * 60 + now.getMinutes();
@@ -462,29 +279,15 @@ function updateCountdowns() {
   var sdEl = document.getElementById('sameday-countdown');
   var ndEl = document.getElementById('nextday-countdown');
   var hEl = document.getElementById('header-countdown');
-  if (sd) {
-    sdEl.textContent = sd.text;
-    sdEl.className = 'delivery-option-countdown' + (sd.urgent ? ' urgent' : '');
-    hEl.textContent = 'Same day: ' + sd.text;
-  } else {
-    sdEl.textContent = 'Closed today';
-    sdEl.className = 'delivery-option-countdown closed';
-    hEl.textContent = '';
-  }
-  if (nd) {
-    ndEl.textContent = nd.text;
-    ndEl.className = 'delivery-option-countdown' + (nd.urgent ? ' urgent' : '');
-  } else {
-    ndEl.textContent = 'Closed today';
-    ndEl.className = 'delivery-option-countdown closed';
-  }
+  if (sd) { sdEl.textContent = sd.text; sdEl.className = 'delivery-option-countdown' + (sd.urgent ? ' urgent' : ''); hEl.textContent = 'Same day: ' + sd.text; }
+  else { sdEl.textContent = 'Closed today'; sdEl.className = 'delivery-option-countdown closed'; hEl.textContent = ''; }
+  if (nd) { ndEl.textContent = nd.text; ndEl.className = 'delivery-option-countdown' + (nd.urgent ? ' urgent' : ''); }
+  else { ndEl.textContent = 'Closed today'; ndEl.className = 'delivery-option-countdown closed'; }
 }
-
 function getTimestamp() {
   var now = new Date();
   return now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString('en-GB', {hour: '2-digit', minute: '2-digit'});
 }
-
 document.getElementById('validate-btn').addEventListener('click', validateAccount);
 document.getElementById('account-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') validateAccount(); });
 document.getElementById('requester-name').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('account-input').focus(); });
@@ -504,16 +307,13 @@ document.getElementById('confirm-checkbox').addEventListener('change', function(
 document.getElementById('submit-btn').addEventListener('click', function() { if (!this.disabled) submitOrder(); });
 document.querySelectorAll('.tab').forEach(function(tab) { tab.addEventListener('click', function() { setTab(tab); }); });
 document.addEventListener('click', function(e) { if (!document.getElementById('search-wrap').contains(e.target)) closeDropdown(); });
-
 function getRequesterName() { return document.getElementById('requester-name').value.trim(); }
-
 function selectDelivery(type) {
   selectedDelivery = type;
   document.getElementById('opt-nextday').classList.toggle('selected', type === 'next_day');
   document.getElementById('opt-sameday').classList.toggle('selected', type === 'same_day');
   resetConfirm(); updateOrderSummary(); updateTicketField();
 }
-
 function validateDeliveryDate() {
   var val = document.getElementById('delivery-date').value;
   var errorEl = document.getElementById('date-error');
@@ -523,7 +323,6 @@ function validateDeliveryDate() {
   if (selected.getDay() === 0 || selected.getDay() === 6) { errorEl.style.display = 'block'; errorEl.textContent = 'We deliver Monday to Friday only.'; return false; }
   errorEl.style.display = 'none'; return true;
 }
-
 function validateAccount() {
   var accountNumber = document.getElementById('account-input').value.trim();
   var requesterName = getRequesterName();
@@ -554,7 +353,6 @@ function validateAccount() {
     document.getElementById('validate-btn').disabled = false;
   });
 }
-
 function showAccountConfirmed(account) {
   document.getElementById('account-status').style.display = 'none';
   document.getElementById('account-confirmed').style.display = 'block';
@@ -565,12 +363,10 @@ function showAccountConfirmed(account) {
   document.getElementById('account-panel').style.borderColor = '#B3DEC8';
   client.set('ticket.subject', 'Fast Delivery Order - ' + (account.name || account.account_number));
 }
-
 function showAccountStatus(type, msg) {
   var el = document.getElementById('account-status');
   el.style.display = 'block'; el.className = 'account-status ' + type; el.textContent = msg;
 }
-
 function changeAccount() {
   accountValidated = false; validatedAccount = null; allProducts = []; orderItems = []; selectedDelivery = 'next_day'; orderTimestamp = null;
   document.getElementById('account-input').value = '';
@@ -592,7 +388,6 @@ function changeAccount() {
   document.getElementById('opt-sameday').classList.remove('selected');
   resetConfirm(); renderOrder(); setDefaultDate();
 }
-
 function loadProducts() {
   document.getElementById('product-section').style.display = 'block';
   showLoading(true);
@@ -617,9 +412,8 @@ function loadProducts() {
       var nl = name.toLowerCase();
       var cat = p.custom_object_fields.category || '';
       if (!cat) {
-        if (nl.indexOf('keg') !== -1 || nl.indexOf('dmm') !== -1 || nl.indexOf('draughtmaster') !== -1) {
-          if (nl.indexOf('cider') !== -1) cat = 'cider'; else cat = 'draught';
-        } else if (nl.indexOf('cask') !== -1 || nl.indexOf('9g') !== -1 || nl.indexOf('4.5g') !== -1) cat = 'cask';
+        if (nl.indexOf('keg') !== -1 || nl.indexOf('dmm') !== -1 || nl.indexOf('draughtmaster') !== -1) { if (nl.indexOf('cider') !== -1) cat = 'cider'; else cat = 'draught'; }
+        else if (nl.indexOf('cask') !== -1 || nl.indexOf('9g') !== -1 || nl.indexOf('4.5g') !== -1) cat = 'cask';
         else if (nl.indexOf('cider') !== -1) cat = 'cider';
         else if (nl.indexOf('gin') !== -1 || nl.indexOf('vodka') !== -1 || nl.indexOf('rum') !== -1 || nl.indexOf('whisky') !== -1 || nl.indexOf('whiskey') !== -1 || nl.indexOf('brandy') !== -1 || nl.indexOf('cognac') !== -1 || nl.indexOf('tequila') !== -1 || nl.indexOf('liqueur') !== -1 || nl.indexOf('schnapps') !== -1 || nl.indexOf('sambuca') !== -1 || nl.indexOf('amaretto') !== -1 || nl.indexOf('vermouth') !== -1 || nl.indexOf('port') !== -1 || nl.indexOf('sherry') !== -1) cat = 'spirits';
         else if (nl.indexOf('wine') !== -1 || nl.indexOf('prosecco') !== -1 || nl.indexOf('champagne') !== -1 || nl.indexOf('cava') !== -1 || nl.indexOf('merlot') !== -1 || nl.indexOf('chardonnay') !== -1 || nl.indexOf('sauvignon') !== -1 || nl.indexOf('pinot') !== -1 || nl.indexOf('rioja') !== -1 || nl.indexOf('malbec') !== -1 || nl.indexOf('shiraz') !== -1 || nl.indexOf('cabernet') !== -1 || nl.indexOf('brut') !== -1 || nl.indexOf('spumante') !== -1 || nl.indexOf('viognier') !== -1 || nl.indexOf('riesling') !== -1 || nl.indexOf('albarino') !== -1) cat = 'wine';
@@ -638,7 +432,6 @@ function loadProducts() {
     showStatus('Could not load products. Please refresh or call 0800 587 0773.', true);
   });
 }
-
 function getSearchTerms(query) {
   var terms = [query];
   var direct = brandAliases[query];
@@ -648,7 +441,6 @@ function getSearchTerms(query) {
   });
   return terms.filter(function(t, i, arr) { return arr.indexOf(t) === i; });
 }
-
 function matchesSearch(p, query) {
   var terms = getSearchTerms(query);
   var nameL = p.name.toLowerCase();
@@ -656,7 +448,6 @@ function matchesSearch(p, query) {
   var kwL = (p.search_keywords || '').toLowerCase();
   return terms.some(function(t) { return nameL.indexOf(t) !== -1 || skuL.indexOf(t) !== -1 || kwL.indexOf(t) !== -1; });
 }
-
 function setTab(el) {
   document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
   el.classList.add('active'); activeCategory = el.getAttribute('data-cat');
@@ -665,11 +456,9 @@ function setTab(el) {
   else if (activeCategory !== 'all') showCategoryBrowse();
   else closeDropdown();
 }
-
 function showCategoryBrowse() {
   renderDropdown(allProducts.filter(function(p) { return p.category === activeCategory; }));
 }
-
 function onSearch() {
   if (!accountValidated) return;
   clearTimeout(searchTimeout);
@@ -682,13 +471,11 @@ function onSearch() {
     renderDropdown(results);
   }, 180);
 }
-
 function onSearchFocus() {
   var query = document.getElementById('search-input').value.trim();
   if (query.length > 0) onSearch();
   else if (activeCategory !== 'all') showCategoryBrowse();
 }
-
 function renderDropdown(results) {
   var dd = document.getElementById('dropdown');
   if (results.length === 0) { dd.innerHTML = '<div class="dropdown-empty">No products found.</div>'; }
@@ -700,9 +487,7 @@ function renderDropdown(results) {
   }
   dd.classList.add('open');
 }
-
 function closeDropdown() { document.getElementById('dropdown').classList.remove('open'); }
-
 function selectProduct(id) {
   var product = allProducts.find(function(p) { return p.id === id; });
   if (!product) return;
@@ -713,7 +498,6 @@ function selectProduct(id) {
   document.getElementById('add-row').classList.add('visible');
   document.getElementById('qty-input').focus();
 }
-
 function confirmAdd() {
   if (!selectedProduct) return;
   var qty = parseInt(document.getElementById('qty-input').value, 10);
@@ -724,14 +508,12 @@ function confirmAdd() {
   renderOrder(); updateTicketField(); cancelAdd();
   showStatus(selectedProduct.name + ' added to your order', false);
 }
-
 function cancelAdd() {
   selectedProduct = null;
   document.getElementById('add-row').classList.remove('visible');
   document.getElementById('search-input').value = '';
   closeDropdown();
 }
-
 function renderOrder() {
   var container = document.getElementById('order-items');
   var count = document.getElementById('order-count');
@@ -753,7 +535,6 @@ function renderOrder() {
   updateOrderValueBar(); updateOrderSummary();
   document.getElementById('confirm-section').style.display = 'block';
 }
-
 function updateOrderValueBar() {
   var total = orderItems.reduce(function(t, i) { return t + i.qty; }, 0);
   var bar = document.getElementById('order-value-bar');
@@ -765,7 +546,6 @@ function updateOrderValueBar() {
   label.className = 'order-value-label' + (total >= 1 ? ' met' : '');
   label.textContent = total >= 1 ? total + ' item' + (total !== 1 ? 's' : '') + ' in your order' : 'Add items to your order';
 }
-
 function updateOrderSummary() {
   var panel = document.getElementById('order-summary-panel');
   if (orderItems.length === 0) { panel.style.display = 'none'; return; }
@@ -779,24 +559,20 @@ function updateOrderSummary() {
     '<div class="order-summary-row"><span class="order-summary-label">Delivery charge</span><span class="order-summary-value">£40.00</span></div>' +
     '<div class="order-summary-row"><span class="order-summary-label">Items</span><span class="order-summary-value">' + orderItems.length + ' product' + (orderItems.length !== 1 ? 's' : '') + '</span></div>';
 }
-
 function resetConfirm() {
   document.getElementById('confirm-checkbox').checked = false;
   document.getElementById('submit-btn').disabled = true;
   document.getElementById('submit-btn').classList.remove('active');
 }
-
 function changeQty(idx, delta) {
   orderItems[idx].qty += delta;
   if (orderItems[idx].qty <= 0) orderItems.splice(idx, 1);
   renderOrder(); updateTicketField(); resetConfirm();
 }
-
 function removeItem(idx) {
   orderItems.splice(idx, 1);
   renderOrder(); updateTicketField(); resetConfirm();
 }
-
 function submitOrder() {
   if (!validateDeliveryDate()) return;
   orderTimestamp = getTimestamp();
@@ -818,11 +594,9 @@ function submitOrder() {
     if (countdownInterval) clearInterval(countdownInterval);
   }, 800);
 }
-
 function updateTicketField() {
   if (orderItems.length === 0) { client.set('ticket.comment.text', ''); return; }
-  var venueName = validated
-Account ? (validatedAccount.name || '') : '';
+  var venueName = validatedAccount ? (validatedAccount.name || '') : '';
   var accountNumber = validatedAccount ? (validatedAccount.account_number || '') : '';
   var requesterName = getRequesterName();
   var postcode = validatedAccount ? (validatedAccount.delivery_postcode || '') : '';
@@ -840,7 +614,6 @@ Account ? (validatedAccount.name || '') : '';
   var internalNote = 'FAST DELIVERY ORDER - ACTION REQUIRED\n\nVenue: ' + venueName + '\nAccount: ' + accountNumber + '\nRequested by: ' + requesterName + '\nPostcode: ' + postcode + '\nDepot: ' + depotName + '\nDelivery type: ' + deliveryLabel + '\nRequested date: ' + deliveryDate + '\nDelivery charge: £40.00\nOrder submitted: ' + timestamp + '\n\nItems ordered:\n' + bulletLines + '\n\nNext steps:\n1. Check availability at ' + depotName + ' depot\n2. Confirm payment with the credit team\n3. Pass to the depot planner to schedule delivery\n\nUpload reference:\n' + csvHeader + '\n' + csvRows;
   client.set('ticket.comment.text', publicNote + '\n\n---INTERNAL---\n\n' + internalNote);
 }
-
 function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 function showLoading(show) { document.getElementById('loading-state').style.display = show ? 'block' : 'none'; }
 function showStatus(msg, isWarning) {
