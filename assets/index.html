@@ -507,6 +507,84 @@ function validateAccount() {
   showAccountStatus('loading', 'Looking up your account...');
   document.getElementById('validate-btn').disabled = true;
 
+  // Search both objects in parallel
+  Promise.all([
+    client.request({ url: '/api/v2/custom_objects/fdcustomeraccount/records/search?query=' + encodeURIComponent(accountNumber), type: 'GET' }).catch(function() { return { custom_object_records: [] }; }),
+    client.request({ url: '/api/v2/custom_objects/account_details/records/search?query=' + encodeURIComponent(accountNumber), type: 'GET' }).catch(function() { return { custom_object_records: [] }; })
+  ]).then(function(results) {
+    var fdRecords = results[0].custom_object_records || [];
+    var adRecords = results[1].custom_object_records || [];
+
+    // Match fdcustomeraccount by account_number field
+    var fdMatch = null;
+    fdRecords.forEach(function(r) {
+      if (r.custom_object_fields.account_number === accountNumber) fdMatch = r;
+    });
+
+    // Match account_details by ship_to_number field
+    var adMatch = null;
+    adRecords.forEach(function(r) {
+      if (r.custom_object_fields.ship_to_number === accountNumber) adMatch = r;
+    });
+
+    // Need at least one match
+    if (!fdMatch && !adMatch) {
+      showAccountStatus('error', 'Account not found. Please check your account number and try again, or contact your Sales Development Manager.');
+      document.getElementById('validate-btn').disabled = false;
+      return;
+    }
+
+    // Build validatedAccount from whichever matched
+    if (fdMatch) {
+      validatedAccount = Object.assign({}, fdMatch.custom_object_fields);
+      validatedAccount.record_id = fdMatch.id;
+      validatedAccount.name = fdMatch.name || fdMatch.custom_object_fields.name || '';
+    } else {
+      validatedAccount = { account_number: accountNumber, name: adMatch.name || '', record_id: adMatch.id };
+    }
+    validatedAccount.requester_name = requesterName;
+
+    // Store account_details record
+    if (adMatch) accountDetailsRecord = adMatch;
+
+    // Postcode validation — compare against account_details postcode first, then fdcustomeraccount
+    var accountPostcode = '';
+    if (adMatch && adMatch.custom_object_fields.postcode) {
+      accountPostcode = normalisePostcode(adMatch.custom_object_fields.postcode);
+    } else if (fdMatch && fdMatch.custom_object_fields.delivery_postcode) {
+      accountPostcode = normalisePostcode(fdMatch.custom_object_fields.delivery_postcode);
+    }
+
+    var enteredPostcode = normalisePostcode(requesterPostcode);
+
+    if (accountPostcode && enteredPostcode !== accountPostcode) {
+      showAccountStatus('warning', 'Postcode does not match our records. This order will be flagged for manual review.');
+      validatedAccount.postcode_mismatch = true;
+    } else {
+      validatedAccount.postcode_mismatch = false;
+      document.getElementById('account-status').style.display = 'none';
+    }
+
+    accountValidated = true;
+    showAccountConfirmed(validatedAccount);
+    document.getElementById('delivery-panel').style.display = 'block';
+    updateAddOrderCountdown();
+    loadProducts();
+
+  }).catch(function() {
+    showAccountStatus('error', 'Could not look up account. Please try again or call us on 0800 587 0773.');
+    document.getElementById('validate-btn').disabled = false;
+  });
+}
+  var accountNumber = document.getElementById('account-input').value.trim();
+  var requesterName = getRequesterName();
+  var requesterPostcode = getRequesterPostcode();
+  if (!requesterName) { showAccountStatus('error', 'Please enter the name of the person placing this order.'); document.getElementById('requester-name').focus(); return; }
+  if (!requesterPostcode) { showAccountStatus('error', 'Please enter your delivery postcode.'); document.getElementById('requester-postcode').focus(); return; }
+  if (!accountNumber) { showAccountStatus('error', 'Please enter your account number.'); return; }
+  showAccountStatus('loading', 'Looking up your account...');
+  document.getElementById('validate-btn').disabled = true;
+
   // Search fdcustomeraccount first
   client.request({ url: '/api/v2/custom_objects/fdcustomeraccount/records/search?query=' + encodeURIComponent(accountNumber), type: 'GET' })
   .then(function(data) {
