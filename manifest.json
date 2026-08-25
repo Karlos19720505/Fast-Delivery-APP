@@ -17,9 +17,5 @@
         "url": "assets/index.html"
       }
     }
-  },
-  "oauth": {
-    "client_id": "zdg-fast-delivery-order",
-    "scopes": ["read"]
   }
 }
