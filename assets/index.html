@@ -401,7 +401,10 @@ function showAccountConfirmed(account) {
   document.getElementById('confirmed-postcode').textContent = postcode;
   var depot = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.depot_ || '') : '';
   var shipTo = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.ship_to_number || '') : '';
-  document.getElementById('confirmed-meta').textContent = [depot, shipTo ? 'Ship-to: ' + shipTo : ''].filter(Boolean).join(' | ');
+  var timeStart = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_start || '') : '';
+var timeEnd = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.time_window_end || '') : '';
+var timeWindow = timeStart ? timeStart.substring(0,5) + (timeEnd ? ' - ' + timeEnd.substring(0,5) : '') : '';
+document.getElementById('confirmed-meta').text
   var deliveryDay = accountDetailsRecord ? (accountDetailsRecord.custom_object_fields.delivery_day_ || '') : '';
   var ddEl = document.getElementById('confirmed-delivery-day');
   if (deliveryDay) {
