@@ -498,6 +498,19 @@ function normalisePostcode(pc) {
 }
 
 function validateAccount() {
+  function validateAccount() {
+  showAccountStatus('loading', 'Debug: starting validation...');
+  setTimeout(function() {
+    client.request({
+      url: '/api/v2/custom_objects/fdcustomeraccount/records/search?query=5829394',
+      type: 'GET'
+    }).then(function(data) {
+      showAccountStatus('loading', 'Debug: found ' + (data.custom_object_records || []).length + ' records in fdcustomeraccount');
+    }).catch(function(err) {
+      showAccountStatus('error', 'Debug error: ' + JSON.stringify(err));
+    });
+  }, 500);
+  return; // temporary — remove after debuggi
   var accountNumber = document.getElementById('account-input').value.trim();
   var requesterName = getRequesterName();
   var requesterPostcode = getRequesterPostcode();
