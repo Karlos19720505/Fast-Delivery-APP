@@ -327,7 +327,7 @@ function startCountdowns(){updateCountdowns();countdownInterval=setInterval(upda
 
 function updateCountdowns(){
   var now=new Date();
-  var dow=now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  var dow=now.getDay();
   var h=now.getHours();
   var m=now.getMinutes();
   var totalMins=h*60+m;
@@ -335,6 +335,7 @@ function updateCountdowns(){
   var sdEl=document.getElementById('sameday-countdown');
   var ndEl=document.getElementById('nextday-countdown');
   var hEl=document.getElementById('header-countdown');
+  hEl.textContent='DEBUG dow='+dow+' h='+h+' m='+m;
 
   // ── SAME DAY ──────────────────────────────────────────────────────────────
   // Cut-off: 3pm (15:00) Mon-Fri. Closed on weekends and after 3pm Friday.
