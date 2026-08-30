@@ -286,16 +286,205 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
 <script>
 var client=ZAFClient.init();var allProducts=[];var orderItems=[];var activeCategory='all';var selectedProduct=null;var searchTimeout=null;var accountValidated=false;var validatedAccount=null;var accountDetailsRecord=null;var selectedDelivery='next_day';var countdownInterval=null;var orderTimestamp=null;var addOrderCutoffPassed=false;var addOrderOverride=false;var isOffDay=false;var isQualifyingCustomer=false;
-var brandAliases={'carlsberg':['carlsberg pilsner','carlsberg export','carlsberg non','carlsberg special'],'brooklyn':['brooklyn lager','brooklyn pilsner','brooklyn stonewall','brooklyn special'],'moretti':['birra moretti','moretti'],'stella':['stella artois'],'guinness':['guinness draught','guinness original','guinness 0.0','guinness micro'],'madri':['madri excepcional'],'fosters':['fosters'],'carling':['carling'],'doom bar':['doom bar'],'strongbow':['strongbow dark','strongbow original','strongbow strawberry'],'heineken':['heineken'],'peroni':['peroni azzurro','birra poretti','poretti'],'san miguel':['san miguel'],'corona':['corona extra'],'budweiser':['budweiser'],'amstel':['amstel lager'],'coors':['coors'],'wainwright':['wainwright golden','wainwright amber','wainwright gold'],'hobgoblin':['hobgoblin gold','hobgoblin ruby','hobgoblin ipa'],'thwaites':['thwaites smooth','thwaites'],'camden':['camden pale','camden stout','camden hells'],'neck oil':['neck oil'],'london pride':['london pride','fullers london pride'],'ghost ship':['ghost ship','adnams ghost ship'],'landlord':['landlord','timothy taylors landlord'],'tribute':['tribute'],'thatchers':['thatchers gold','thatchers juicy','thatchers apple'],'aspall':['aspall cyder'],'rekorderlig':['rekorderlig'],'old mout':['old mout berries','old mout kiwi'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'somersby':['somersby apple','somersby blackberry'],'magners':['magners original','magners dark'],'bulmers':['bulmers original','bulmers red'],'pepsi':['pepsi max','pepsi cola','diet pepsi','pepsi'],'coke':['coca cola','diet coke','coca-cola'],'coca cola':['coca cola','coca-cola','diet coke'],'fentimans':['fentimans'],'red bull':['red bull'],'fever tree':['fever-tree','fever tree'],'britvic':['britvic'],'7up':['7up zero','7up free','7up'],'j2o':['j2o'],'schweppes':['schweppes'],'smirnoff':['smirnoff red','smirnoff vodka','smirnoff'],'gordons':['gordons gin','gordons pink','gordons'],'tanqueray':['tanqueray gin','tanqueray no10','tanqueray'],'bacardi':['bacardi blanca','bacardi spiced','bacardi oro','bacardi'],'captain morgan':['captain morgan','capt morgan'],'jack daniels':['jack daniels','jack daniel'],'jameson':['jameson irish','jameson'],'baileys':['baileys irish','baileys'],'prosecco':['prosecco','spumante'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'gin':['gin'],'vodka':['vodka'],'rum':['rum'],'whisky':['whisky','whiskey','scotch'],'lager':['lager','pilsner'],'cask':['cask'],'keg':['keg'],'water':['water'],'wine':['wine'],'cider':['cider'],'stout':['stout','guinness'],'ale':['ale','bitter','pale ale']};
+var brandAliases={'carlsberg':['carlsberg pilsner','carlsberg export','carlsberg non','carlsberg special'],'brooklyn':['brooklyn lager','brooklyn pilsner','brooklyn stonewall','brooklyn special'],'moretti':['birra moretti','moretti'],'stella':['stella artois'],'guinness':['guinness draught','guinness original','guinness 0.0','guinness micro'],'madri':['madri excepcional'],'fosters':['fosters'],'carling':['carling'],'doom bar':['doom bar'],'strongbow':['strongbow dark','strongbow original','strongbow strawberry'],'heineken':['heineken'],'peroni':['peroni azzurro','birra poretti','poretti'],'san miguel':['san miguel'],'corona':['corona extra'],'budweiser':['budweiser'],'amstel':['amstel lager'],'coors':['coors'],'wainwright':['wainwright golden','wainwright amber','wainwright gold'],'hobgoblin':['hobgoblin gold','hobgoblin ruby','hobgoblin ipa'],'thwaites':['thwaites smooth','thwaites'],'camden':['camden pale','camden stout','camden hells'],'neck oil':['neck oil'],'london pride':['london pride','fullers london pride'],'ghost ship':['ghost ship','adnams ghost ship'],'landlord':['landlord','timothy taylors landlord'],'tribute':['tribute'],'thatchers':['thatchers gold','thatchers juicy','thatchers apple'],'aspall':['aspall cyder'],'rekorderlig':['rekorderlig'],'old mout':['old mout berries','old mout kiwi'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'somersby':['somersby apple','somersby blackberry'],'magners':['magners original','magners dark'],'bulmers':['bulmers original','bulmers red'],'pepsi':['pepsi max','pepsi cola','diet pepsi','pepsi'],'coke':['coca cola','diet coke','coca-cola'],'coca cola':['coca cola','coca-cola','diet coke'],'fentimans':['fentimans'],'red bull':['red bull'],'fever tree':['fever-tree','fever tree'],'britvic':['britvic'],'7up':['7up zero','7up free','7up'],'j2o':['j2o'],'schweppes':['schweppes'],'smirnoff':['smirnoff red','smirnoff vodka','smirnoff'],'gordons':['gordons gin','gordons pink','gordons'],'tanqueray':['tanqueray gin','tanqueray no10','tanqueray'],'bacardi':['bacardi blanca','bacardi spiced','bacardi oro','bacardi'],'captain morgan':['captain morgan','capt morgan'],'jack daniels':['jack daniels','jack daniel'],'jameson':['jameson irish','jameson'],'baileys':['baileys irish','baileys'],'prosecco':['prosecco','spumante'],'gin':['gin'],'vodka':['vodka'],'rum':['rum'],'whisky':['whisky','whiskey','scotch'],'lager':['lager','pilsner'],'cask':['cask'],'keg':['keg'],'water':['water'],'wine':['wine'],'cider':['cider'],'stout':['stout','guinness'],'ale':['ale','bitter','pale ale']};
 client.on('app.registered',function(){client.invoke('resize',{width:'100%',height:'600px'});startCountdowns();setDefaultDate();});
-function setDefaultDate(){var d=new Date();d.setDate(d.getDate()+1);while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);var min=d.toISOString().split('T')[0];var el=document.getElementById('delivery-date');el.min=min;el.value=min;checkDeliveryDay();}
+
+// ─── WEEKEND-AWARE HELPER FUNCTIONS ──────────────────────────────────────────
+
+// Returns true if the given Date falls on a Saturday or Sunday
+function isWeekend(d){var day=d.getDay();return day===0||day===6;}
+
+// Returns the next Monday at 00:00:00 relative to the given Date
+function nextMonday(d){var result=new Date(d);result.setHours(0,0,0,0);var day=result.getDay();// 0=Sun,6=Sat
+var daysUntilMonday=day===0?1:day===6?2:0;result.setDate(result.getDate()+daysUntilMonday);return result;}
+
+// Returns the next working day (Mon-Fri) at 00:00:00 on or after the given Date
+function nextWorkingDay(d){var result=new Date(d);result.setHours(0,0,0,0);while(result.getDay()===0||result.getDay()===6)result.setDate(result.getDate()+1);return result;}
+
+// Returns minutes remaining until a target Date from now, or null if in the past
+function minsUntil(targetDate){var ms=targetDate-new Date();if(ms<=0)return null;return Math.floor(ms/60000);}
+
+// Formats a minute count as "Xh Ym left" or "Ym left"
+function fmtMins(mins){var h=Math.floor(mins/60);var m=mins%60;return h>0?h+'h '+m+'m left':m+'m left';}
+
+// ─── DEFAULT DATE (skips weekends) ───────────────────────────────────────────
+
+function setDefaultDate(){
+  var d=new Date();
+  d.setDate(d.getDate()+1);
+  // Advance past any weekend days
+  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);
+  var min=d.toISOString().split('T')[0];
+  var el=document.getElementById('delivery-date');
+  el.min=min;
+  el.value=min;
+  checkDeliveryDay();
+}
+
+// ─── MAIN COUNTDOWN UPDATE ───────────────────────────────────────────────────
+
 function startCountdowns(){updateCountdowns();countdownInterval=setInterval(updateCountdowns,60000);}
+
+function updateCountdowns(){
+  var now=new Date();
+  var dow=now.getDay(); // 0=Sun,1=Mon,...,6=Sat
+  var h=now.getHours();
+  var m=now.getMinutes();
+  var totalMins=h*60+m;
+
+  var sdEl=document.getElementById('sameday-countdown');
+  var ndEl=document.getElementById('nextday-countdown');
+  var hEl=document.getElementById('header-countdown');
+
+  // ── SAME DAY ──────────────────────────────────────────────────────────────
+  // Cut-off: 3pm (15:00) Mon-Fri. Closed on weekends and after 3pm Friday.
+  if(dow===0||dow===6){
+    // Weekend — always closed
+    sdEl.textContent='Closed';
+    sdEl.className='delivery-option-countdown closed';
+    hEl.textContent='';
+  } else {
+    // Weekday
+    var sdCutoffMins=15*60; // 3pm in minutes
+    var sdLeft=sdCutoffMins-totalMins;
+    if(sdLeft<=0){
+      sdEl.textContent='Closed today';
+      sdEl.className='delivery-option-countdown closed';
+      hEl.textContent='';
+    } else {
+      sdEl.textContent=fmtMins(sdLeft);
+      sdEl.className='delivery-option-countdown'+(sdLeft<=60?' urgent':'');
+      hEl.textContent='Same day: '+fmtMins(sdLeft);
+    }
+  }
+
+  // ── NEXT DAY ──────────────────────────────────────────────────────────────
+  // Cut-off: 5pm (17:00) Mon-Thu. On Friday after 5pm → Monday. Weekend → Monday 5pm.
+  if(dow===0||dow===6){
+    // Weekend: count down to Monday 5pm
+    var mon=nextMonday(now);
+    mon.setHours(17,0,0,0);
+    var ndMins=minsUntil(mon);
+    if(ndMins!==null){
+      ndEl.textContent='Mon 5pm: '+fmtMins(ndMins);
+      ndEl.className='delivery-option-countdown'+(ndMins<=60?' urgent':'');
+    } else {
+      ndEl.textContent='Closed';
+      ndEl.className='delivery-option-countdown closed';
+    }
+  } else if(dow===5){
+    // Friday
+    var ndCutoffMins=17*60;
+    var ndLeft=ndCutoffMins-totalMins;
+    if(ndLeft>0){
+      // Before 5pm Friday — still open for today's cut-off
+      ndEl.textContent=fmtMins(ndLeft);
+      ndEl.className='delivery-option-countdown'+(ndLeft<=60?' urgent':'');
+    } else {
+      // After 5pm Friday — next cut-off is Monday 5pm
+      var monNd=new Date(now);
+      monNd.setDate(monNd.getDate()+(8-dow)); // days until next Monday
+      monNd.setHours(17,0,0,0);
+      var ndMinsMon=minsUntil(monNd);
+      if(ndMinsMon!==null){
+        ndEl.textContent='Mon 5pm: '+fmtMins(ndMinsMon);
+        ndEl.className='delivery-option-countdown';
+      } else {
+        ndEl.textContent='Closed';
+        ndEl.className='delivery-option-countdown closed';
+      }
+    }
+  } else {
+    // Mon-Thu
+    var ndCutoffMins=17*60;
+    var ndLeft=ndCutoffMins-totalMins;
+    if(ndLeft>0){
+      ndEl.textContent=fmtMins(ndLeft);
+      ndEl.className='delivery-option-countdown'+(ndLeft<=60?' urgent':'');
+    } else {
+      ndEl.textContent='Closed today';
+      ndEl.className='delivery-option-countdown closed';
+    }
+  }
+
+  updateAddOrderCountdown();
+}
+
+// ─── ADD TO ORDER COUNTDOWN ──────────────────────────────────────────────────
+// Cut-off: 11am the working day before the scheduled delivery.
+// On weekends, counts down to the next working day's 11am cut-off.
+
+function updateAddOrderCountdown(){
+  var el=document.getElementById('addorder-countdown');
+  var infoEl=document.getElementById('add-order-info');
+
+  if(!accountDetailsRecord){
+    el.textContent='Confirm account';
+    el.className='delivery-option-countdown';
+    addOrderCutoffPassed=false;
+    return;
+  }
+
+  var deliveryDay=accountDetailsRecord.custom_object_fields.delivery_day_||'';
+  var nextDelivery=getNextDeliveryDate(deliveryDay);
+  if(!nextDelivery){
+    el.textContent='No day set';
+    el.className='delivery-option-countdown warning';
+    return;
+  }
+
+  // The cut-off is 11am on the working day before the next delivery
+  var cutoff=getAddOrderCutoff(nextDelivery);
+
+  // If the raw cutoff falls on a weekend, push it back to the preceding Friday
+  // (so the cut-off is always on a working day)
+  while(cutoff.getDay()===0||cutoff.getDay()===6){
+    cutoff.setDate(cutoff.getDate()-1);
+    cutoff.setHours(11,0,0,0);
+  }
+
+  var now=new Date();
+  var msLeft=cutoff-now;
+
+  if(msLeft<=0){
+    addOrderCutoffPassed=true;
+    el.textContent='Cut-off passed';
+    el.className='delivery-option-countdown closed';
+    document.getElementById('opt-addorder').classList.add('cutoff-passed');
+    if(selectedDelivery==='add_order')infoEl.classList.add('visible');
+  } else {
+    addOrderCutoffPassed=false;
+    document.getElementById('opt-addorder').classList.remove('cutoff-passed');
+    infoEl.classList.remove('visible');
+
+    var totalMinsLeft=Math.floor(msLeft/60000);
+    var timeText=fmtMins(totalMinsLeft);
+
+    var cutoffDay=cutoff.toDateString();
+    var today=now.toDateString();
+    var tomorrow=new Date(now);
+    tomorrow.setDate(tomorrow.getDate()+1);
+
+    var prefix;
+    if(cutoffDay===today){
+      prefix='Today 11am: ';
+    } else if(cutoffDay===tomorrow.toDateString()){
+      prefix='Tomorrow 11am: ';
+    } else {
+      prefix=cutoff.toLocaleDateString('en-GB',{weekday:'short'})+' 11am: ';
+    }
+
+    el.textContent=prefix+timeText;
+    el.className='delivery-option-countdown'+(totalMinsLeft<=60?' urgent':'');
+  }
+}
+
+// ─── UNCHANGED FUNCTIONS BELOW ───────────────────────────────────────────────
+
 function getNextDeliveryDate(dayName){if(!dayName)return null;var days={'monday':1,'tuesday':2,'wednesday':3,'thursday':4,'friday':5,'saturday':6,'sunday':0};var target=days[dayName.toLowerCase().trim()];if(target===undefined)return null;var now=new Date();var result=new Date(now);result.setHours(0,0,0,0);var current=result.getDay();var diff=(target-current+7)%7;if(diff===0)diff=7;result.setDate(result.getDate()+diff);return result;}
 function getAddOrderCutoff(deliveryDate){if(!deliveryDate)return null;var cutoff=new Date(deliveryDate);cutoff.setDate(cutoff.getDate()-1);cutoff.setHours(11,0,0,0);return cutoff;}
 function getDayName(dateStr){if(!dateStr)return'';var d=new Date(dateStr+'T12:00:00');return d.toLocaleDateString('en-GB',{weekday:'long'}).toLowerCase();}
 function checkDeliveryDay(){var dateEl=document.getElementById('delivery-date');var val=dateEl.value;var normalDayMsg=document.getElementById('normal-day-msg');var offDayMsg=document.getElementById('off-day-msg');var offDayConfirm=document.getElementById('off-day-confirm');if(!val||!accountDetailsRecord){normalDayMsg.classList.remove('visible');offDayMsg.classList.remove('visible');dateEl.className='';isOffDay=false;return;}var scheduledDay=(accountDetailsRecord.custom_object_fields.delivery_day_||'').toLowerCase().trim();var selectedDay=getDayName(val);if(!scheduledDay){normalDayMsg.classList.remove('visible');offDayMsg.classList.remove('visible');dateEl.className='';isOffDay=false;return;}if(selectedDay===scheduledDay){isOffDay=false;dateEl.className='normal-day';normalDayMsg.classList.add('visible');offDayMsg.classList.remove('visible');offDayConfirm.checked=false;document.getElementById('normal-day-msg-body').textContent=scheduledDay.charAt(0).toUpperCase()+scheduledDay.slice(1)+' is your scheduled delivery day. Your order will follow the normal delivery route.';}else{isOffDay=true;dateEl.className='off-day';normalDayMsg.classList.remove('visible');offDayMsg.classList.add('visible');offDayConfirm.checked=false;document.getElementById('off-day-msg-body').textContent='You have selected '+selectedDay.charAt(0).toUpperCase()+selectedDay.slice(1)+' but your scheduled delivery day is '+scheduledDay.charAt(0).toUpperCase()+scheduledDay.slice(1)+'. Off-day deliveries are not guaranteed and must be reviewed and approved by the depot before they can be confirmed. Please tick the box below to confirm you have been advised of this.';}updateSubmitButton();}
-function updateCountdowns(){var now=new Date();var totalMins=now.getHours()*60+now.getMinutes();function txt(cutoff){var left=cutoff-totalMins;if(left<=0)return null;var h=Math.floor(left/60);var m=left%60;return{text:h>0?h+'h '+m+'m left':m+'m left',urgent:left<=60};}var sd=txt(15*60);var nd=txt(17*60);var sdEl=document.getElementById('sameday-countdown');var ndEl=document.getElementById('nextday-countdown');var hEl=document.getElementById('header-countdown');if(sd){sdEl.textContent=sd.text;sdEl.className='delivery-option-countdown'+(sd.urgent?' urgent':'');hEl.textContent='Same day: '+sd.text;}else{sdEl.textContent='Closed today';sdEl.className='delivery-option-countdown closed';hEl.textContent='';}if(nd){ndEl.textContent=nd.text;ndEl.className='delivery-option-countdown'+(nd.urgent?' urgent':'');}else{ndEl.textContent='Closed today';ndEl.className='delivery-option-countdown closed';}updateAddOrderCountdown();}
-function updateAddOrderCountdown(){var el=document.getElementById('addorder-countdown');var infoEl=document.getElementById('add-order-info');if(!accountDetailsRecord){el.textContent='Confirm account';el.className='delivery-option-countdown';addOrderCutoffPassed=false;return;}var deliveryDay=accountDetailsRecord.custom_object_fields.delivery_day_||'';var nextDelivery=getNextDeliveryDate(deliveryDay);if(!nextDelivery){el.textContent='No day set';el.className='delivery-option-countdown warning';return;}var cutoff=getAddOrderCutoff(nextDelivery);var now=new Date();var msLeft=cutoff-now;if(msLeft<=0){addOrderCutoffPassed=true;el.textContent='Cut-off passed';el.className='delivery-option-countdown closed';document.getElementById('opt-addorder').classList.add('cutoff-passed');if(selectedDelivery==='add_order')infoEl.classList.add('visible');}else{addOrderCutoffPassed=false;document.getElementById('opt-addorder').classList.remove('cutoff-passed');infoEl.classList.remove('visible');var totalMinsLeft=Math.floor(msLeft/60000);var h=Math.floor(totalMinsLeft/60);var m=totalMinsLeft%60;var timeText=h>0?h+'h '+m+'m left':m+'m left';var cutoffDay=cutoff.toDateString();var today=now.toDateString();var tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);var prefix=cutoffDay===today?'Today 11am: ':(cutoffDay===tomorrow.toDateString()?'Tomorrow 11am: ':cutoff.toLocaleDateString('en-GB',{weekday:'short'})+' 11am: ');el.textContent=prefix+timeText;el.className='delivery-option-countdown'+(totalMinsLeft<=60?' urgent':'');}}
 function getTimestamp(){var now=new Date();return now.toLocaleDateString('en-GB')+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});}
 function getRequesterName(){return document.getElementById('requester-name').value.trim();}
 function getRequesterPostcode(){return document.getElementById('requester-postcode').value.trim().toUpperCase();}
@@ -329,7 +518,7 @@ function validateAccount(){var accountNumber=document.getElementById('account-in
 function showAccountConfirmed(account){document.getElementById('account-status').style.display='none';document.getElementById('account-confirmed').style.display='block';document.getElementById('confirmed-name').textContent=account.name||'Your venue';var postcode=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.postcode||''):(account.delivery_postcode||'');document.getElementById('confirmed-postcode').textContent=postcode;var depot=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.depot_||''):'';var shipTo=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.ship_to_number||''):'';var timeStart=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.time_window_start||''):'';var timeEnd=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.time_window_end||''):'';var timeWindow=timeStart?timeStart.substring(0,5)+(timeEnd?' - '+timeEnd.substring(0,5):''):'';var metaParts=[];if(depot)metaParts.push(depot);if(shipTo)metaParts.push('Ship-to: '+shipTo);if(timeWindow)metaParts.push('Window: '+timeWindow);document.getElementById('confirmed-meta').textContent=metaParts.join(' | ');var deliveryDay=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.delivery_day_||''):'';var ddEl=document.getElementById('confirmed-delivery-day');if(deliveryDay){ddEl.innerHTML='<span class="delivery-day-badge">Scheduled delivery: '+deliveryDay+'</span>';}else{ddEl.innerHTML='';}document.getElementById('account-panel').style.background=account.postcode_mismatch?'#FFF8E8':'#F0F8F4';document.getElementById('account-panel').style.borderColor=account.postcode_mismatch?'#F0D080':'#B3DEC8';client.set('ticket.subject','Fast Delivery Order - '+(account.name||account.account_number));}
 function showAccountStatus(type,msg){var el=document.getElementById('account-status');el.style.display='block';el.className='account-status '+type;el.textContent=msg;}
 function changeAccount(){accountValidated=false;validatedAccount=null;accountDetailsRecord=null;allProducts=[];orderItems=[];selectedDelivery='next_day';orderTimestamp=null;addOrderCutoffPassed=false;addOrderOverride=false;isOffDay=false;isQualifyingCustomer=false;document.getElementById('account-input').value='';document.getElementById('requester-name').value='';document.getElementById('requester-postcode').value='';document.getElementById('account-confirmed').style.display='none';document.getElementById('account-status').style.display='none';document.getElementById('account-panel').style.background='#fff';document.getElementById('account-panel').style.borderColor='#EBEBEB';document.getElementById('validate-btn').disabled=false;document.getElementById('delivery-panel').style.display='none';document.getElementById('product-section').style.display='none';document.getElementById('order-section').style.display='none';document.getElementById('confirm-section').style.display='none';document.getElementById('order-summary-panel').style.display='none';document.getElementById('confirmation-screen').style.display='none';document.getElementById('add-order-info').classList.remove('visible');document.getElementById('add-order-override').checked=false;document.getElementById('normal-day-msg').classList.remove('visible');document.getElementById('off-day-msg').classList.remove('visible');document.getElementById('off-day-confirm').checked=false;document.getElementById('delivery-date').className='';var noticeEl=document.getElementById('fast-delivery-notice');if(noticeEl)noticeEl.style.display='none';document.getElementById('status-bar').className='status-bar';document.getElementById('opt-nextday').classList.add('selected');document.getElementById('opt-sameday').classList.remove('selected');document.getElementById('opt-addorder').classList.remove('selected');resetConfirm();renderOrder();setDefaultDate();}
-function loadProducts(){document.getElementById('product-section').style.display='block';showLoading(true);function fetchAll(url,collected){collected=collected||[];return client.request({url:url,type:'GET'}).then(function(data){collected=collected.concat(data.custom_object_records||[]);if(data.meta&&data.meta.has_more&&data.links&&data.links.next)return fetchAll(data.links.next.replace('https://carlsbergmarstons.zendesk.com',''),collected);return collected;});}fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords){var seenSkus={};allProducts=[];allRecords.forEach(function(p){var sku=p.custom_object_fields.sku||p.id;var name=p.name||p.custom_object_fields.name||'';if(!name||name.length<3)return;if(seenSkus[sku])return;seenSkus[sku]=true;var nl=name.toLowerCase();var cat=p.custom_object_fields.category||'';if(!cat){if(nl.indexOf('keg')!==-1||nl.indexOf('dmm')!==-1||nl.indexOf('draughtmaster')!==-1){if(nl.indexOf('cider')!==-1)cat='cider';else cat='draught';}else if(nl.indexOf('cask')!==-1||nl.indexOf('9g')!==-1||nl.indexOf('4.5g')!==-1)cat='cask';else if(nl.indexOf('cider')!==-1)cat='cider';else if(nl.indexOf('gin')!==-1||nl.indexOf('vodka')!==-1||nl.indexOf('rum')!==-1||nl.indexOf('whisky')!==-1||nl.indexOf('whiskey')!==-1||nl.indexOf('brandy')!==-1||nl.indexOf('cognac')!==-1||nl.indexOf('tequila')!==-1||nl.indexOf('liqueur')!==-1||nl.indexOf('schnapps')!==-1||nl.indexOf('sambuca')!==-1||nl.indexOf('amaretto')!==-1||nl.indexOf('vermouth')!==-1||nl.indexOf('port')!==-1||nl.indexOf('sherry')!==-1)cat='spirits';else if(nl.indexOf('wine')!==-1||nl.indexOf('prosecco')!==-1||nl.indexOf('champagne')!==-1||nl.indexOf('cava')!==-1||nl.indexOf('merlot')!==-1||nl.indexOf('chardonnay')!==-1||nl.indexOf('sauvignon')!==-1||nl.indexOf('pinot')!==-1||nl.indexOf('rioja')!==-1||nl.indexOf('malbec')!==-1||nl.indexOf('shiraz')!==-1||nl.indexOf('cabernet')!==-1||nl.indexOf('brut')!==-1||nl.indexOf('spumante')!==-1)cat='wine';else if(nl.indexOf('pepsi')!==-1||nl.indexOf('cola')!==-1||nl.indexOf('lemonade')!==-1||nl.indexOf('tonic')!==-1||nl.indexOf('juice')!==-1||nl.indexOf('water')!==-1||nl.indexOf('ginger')!==-1||nl.indexOf('fever')!==-1||nl.indexOf('britvic')!==-1||nl.indexOf('fentimans')!==-1||nl.indexOf('red bull')!==-1||nl.indexOf('7up')!==-1||nl.indexOf('schweppes')!==-1||nl.indexOf('j2o')!==-1||nl.indexOf('cordial')!==-1||nl.indexOf('squash')!==-1||nl.indexOf('energy')!==-1||nl.indexOf('mineral')!==-1)cat='soft_drink';else cat='packaged';}allProducts.push({id:p.id,name:name,sku:sku,category:cat,search_keywords:p.custom_object_fields.search_keywords||''});});showLoading(false);document.getElementById('order-section').style.display='block';renderOrder();showStatus(allProducts.length+' products available',false);}).catch(function(){showLoading(false);document.getElementById('order-section').style.display='block';showStatus('Could not load products. Please refresh or call 0800 587 0773.',true);});}
+function loadProducts(){document.getElementById('product-section').style.display='block';showLoading(true);function fetchAll(url,collected){collected=collected||[];return client.request({url:url,type:'GET'}).then(function(data){collected=collected.concat(data.custom_object_records||[]);if(data.meta&&data.meta.has_more&&data.links&&data.links.next)return fetchAll(data.links.next.replace('https://carlsbergmarstons.zendesk.com',''),collected);return collected;});}fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords){var seenSkus={};allProducts=[];allRecords.forEach(function(p){var sku=p.custom_object_fields.sku||p.id;var name=p.name||p.custom_object_fields.name||'';if(!name||name.length<3)return;if(seenSkus[sku])return;seenSkus[sku]=true;var nl=name.toLowerCase();var cat=p.custom_object_fields.category||'';if(!cat){if(nl.indexOf('keg')!==-1||nl.indexOf('dmm')!==-1||nl.indexOf('draughtmaster')!==-1){if(nl.indexOf('cider')!==-1)cat='cider';else cat='draught';}else if(nl.indexOf('cask')!==-1||nl.indexOf('9g')!==-1||nl.indexOf('4.5g')!==-1)cat='cask';else if(nl.indexOf('cider')!==-1)cat='cider';else ifyId('product-section').style.display='block';showLoading(true);function fetchAll(url,collected){collected=collected||[];return client.request({url:url,type:'GET'}).then(function(data){collected=collected.concat(data.custom_object_records||[]);if(data.meta&&data.meta.has_more&&data.links&&data.links.next)return fetchAll(data.links.next.replace('https://carlsbergmarstons.zendesk.com',''),collected);return collected;});}fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords){var seenSkus={};allProducts=[];allRecords.forEach(function(p){var sku=p.custom_object_fields.sku||p.id;var name=p.name||p.custom_object_fields.name||'';if(!name||name.length<3)return;if(seenSkus[sku])return;seenSkus[sku]=true;var nl=name.toLowerCase();var cat=p.custom_object_fields.category||'';if(!cat){if(nl.indexOf('keg')!==-1||nl.indexOf('dmm')!==-1||nl.indexOf('draughtmaster')!==-1){if(nl.indexOf('cider')!==-1)cat='cider';else cat='draught';}else if(nl.indexOf('cask')!==-1||nl.indexOf('9g')!==-1||nl.indexOf('4.5g')!==-1)cat='cask';else if(nl.indexOf('cider')!==-1)cat='cider';else if(nl.indexOf('gin')!==-1||nl.indexOf('vodka')!==-1||nl.indexOf('rum')!==-1||nl.indexOf('whisky')!==-1||nl.indexOf('whiskey')!==-1||nl.indexOf('brandy')!==-1||nl.indexOf('cognac')!==-1||nl.indexOf('tequila')!==-1||nl.indexOf('liqueur')!==-1||nl.indexOf('schnapps')!==-1||nl.indexOf('sambuca')!==-1||nl.indexOf('amaretto')!==-1||nl.indexOf('vermouth')!==-1||nl.indexOf('port')!==-1||nl.indexOf('sherry')!==-1)cat='spirits';else if(nl.indexOf('wine')!==-1||nl.indexOf('prosecco')!==-1||nl.indexOf('champagne')!==-1||nl.indexOf('cava')!==-1||nl.indexOf('merlot')!==-1||nl.indexOf('chardonnay')!==-1||nl.indexOf('sauvignon')!==-1||nl.indexOf('pinot')!==-1||nl.indexOf('rioja')!==-1||nl.indexOf('malbec')!==-1||nl.indexOf('shiraz')!==-1||nl.indexOf('cabernet')!==-1||nl.indexOf('brut')!==-1||nl.indexOf('spumante')!==-1)cat='wine';else if(nl.indexOf('pepsi')!==-1||nl.indexOf('cola')!==-1||nl.indexOf('lemonade')!==-1||nl.indexOf('tonic')!==-1||nl.indexOf('juice')!==-1||nl.indexOf('water')!==-1||nl.indexOf('ginger')!==-1||nl.indexOf('fever')!==-1||nl.indexOf('britvic')!==-1||nl.indexOf('fentimans')!==-1||nl.indexOf('red bull')!==-1||nl.indexOf('7up')!==-1||nl.indexOf('schweppes')!==-1||nl.indexOf('j2o')!==-1||nl.indexOf('cordial')!==-1||nl.indexOf('squash')!==-1||nl.indexOf('energy')!==-1||nl.indexOf('mineral')!==-1)cat='soft_drink';else cat='packaged';}allProducts.push({id:p.id,name:name,sku:sku,category:cat,search_keywords:p.custom_object_fields.search_keywords||''});});showLoading(false);document.getElementById('order-section').style.display='block';renderOrder();showStatus(allProducts.length+' products available',false);}).catch(function(){showLoading(false);document.getElementById('order-section').style.display='block';showStatus('Could not load products. Please refresh or call 0800 587 0773.',true);});}
 function getSearchTerms(query){var terms=[query];var direct=brandAliases[query];if(direct)terms=terms.concat(direct);Object.keys(brandAliases).forEach(function(key){if(key!==query&&(query.indexOf(key)!==-1||key.indexOf(query)!==-1))terms=terms.concat(brandAliases[key]);});return terms.filter(function(t,i,arr){return arr.indexOf(t)===i;});}
 function matchesSearch(p,query){var terms=getSearchTerms(query);var nameL=p.name.toLowerCase();var skuL=p.sku.toLowerCase();var kwL=(p.search_keywords||'').toLowerCase();return terms.some(function(t){return nameL.indexOf(t)!==-1||skuL.indexOf(t)!==-1||kwL.indexOf(t)!==-1;});}
 function setTab(el){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');activeCategory=el.getAttribute('data-cat');var query=document.getElementById('search-input').value.trim().toLowerCase();if(query.length>0)onSearch();else if(activeCategory!=='all')showCategoryBrowse();else closeDropdown();}
@@ -338,8 +527,7 @@ function onSearch(){if(!accountValidated)return;clearTimeout(searchTimeout);sear
 function onSearchFocus(){var query=document.getElementById('search-input').value.trim();if(query.length>0)onSearch();else if(activeCategory!=='all')showCategoryBrowse();}
 function renderDropdown(results){var dd=document.getElementById('dropdown');if(results.length===0){dd.innerHTML='<div class="dropdown-empty">No products found.</div>';}else{dd.innerHTML=results.slice(0,30).map(function(p){return'<div class="dropdown-item" data-id="'+esc(p.id)+'"><div class="di-name">'+esc(p.name)+'</div></div>';}).join('');dd.querySelectorAll('.dropdown-item').forEach(function(item){item.addEventListener('click',function(){selectProduct(item.getAttribute('data-id'));});});}dd.classList.add('open');}
 function closeDropdown(){document.getElementById('dropdown').classList.remove('open');}
-function selectProduct(id){var product=allProducts.find(function(p){return p.id===id;});if(!product)return;selectedProduct=product;closeDropdown();document.getElementById('search-input').value=product.name;document.getElementById('sel-name').textContent=product.name;document
-.getElementById('qty-input').value=1;document.getElementById('add-row').classList.add('visible');document.getElementById('qty-input').focus();}
+function selectProduct(id){var product=allProducts.find(function(p){return p.id===id;});if(!product)return;selectedProduct=product;closeDropdown();document.getElementById('search-input').value=product.name;document.getElementById('sel-name').textContent=product.name;document.getElementById('qty-input').value=1;document.getElementById('add-row').classList.add('visible');document.getElementById('qty-input').focus();}
 function confirmAdd(){if(!selectedProduct)return;var qty=parseInt(document.getElementById('qty-input').value,10);if(!qty||qty<1){document.getElementById('qty-input').focus();return;}var existing=orderItems.find(function(i){return i.id===selectedProduct.id;});if(existing)existing.qty+=qty;else orderItems.push({id:selectedProduct.id,name:selectedProduct.name,sku:selectedProduct.sku,qty:qty});renderOrder();updateTicketField();cancelAdd();showStatus(selectedProduct.name+' added to your order',false);}
 function cancelAdd(){selectedProduct=null;document.getElementById('add-row').classList.remove('visible');document.getElementById('search-input').value='';closeDropdown();}
 function renderOrder(){var container=document.getElementById('order-items');var count=document.getElementById('order-count');count.textContent=orderItems.length;if(orderItems.length===0){container.innerHTML='<div class="order-empty">No products added yet. Search above to add items.</div>';document.getElementById('confirm-section').style.display='none';document.getElementById('order-value-bar').style.display='none';document.getElementById('order-summary-panel').style.display='none';resetConfirm();return;}container.innerHTML=orderItems.map(function(item,idx){return'<div class="order-item"><div class="oi-info"><div class="oi-name">'+esc(item.name)+'</div></div><div class="oi-qty-wrap"><button class="oi-qty-btn" data-idx="'+idx+'" data-delta="-1">-</button><span class="oi-qty">'+item.qty+'</span><button class="oi-qty-btn" data-idx="'+idx+'" data-delta="1">+</button></div><button class="oi-remove" data-idx="'+idx+'">X</button></div>';}).join('');container.querySelectorAll('.oi-qty-btn').forEach(function(btn){btn.addEventListener('click',function(){changeQty(parseInt(btn.getAttribute('data-idx')),parseInt(btn.getAttribute('data-delta')));});});container.querySelectorAll('.oi-remove').forEach(function(btn){btn.addEventListener('click',function(){removeItem(parseInt(btn.getAttribute('data-idx')));});});updateOrderValueBar();updateOrderSummary();document.getElementById('confirm-section').style.display='block';updateSubmitButton();}
@@ -357,3 +545,5 @@ function showStatus(msg,isWarning){var bar=document.getElementById('status-bar')
 </script>
 </body>
 </html>
+
+
