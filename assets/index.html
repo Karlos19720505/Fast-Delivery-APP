@@ -40,6 +40,7 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 .delivery-option { flex: 1; border: 2px solid #E0E0E0; border-radius: 5px; padding: 6px; cursor: pointer; transition: all 0.15s; }
 .delivery-option.selected { border-color: #00703C; background: #F0F8F4; }
 .delivery-option.cutoff-passed { border-color: #F0D080; background: #FFF8E8; }
+.delivery-option.fd-hidden { display: none !important; }
 .delivery-option-type { font-size: 11px; font-weight: 700; color: #1A1A1A; }
 .delivery-option-detail { font-size: 9px; color: #555; margin-top: 1px; }
 .delivery-option-charge { font-size: 10px; font-weight: 700; color: #00703C; margin-top: 2px; }
@@ -186,21 +187,19 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <div class="delivery-panel" id="delivery-panel">
   <div class="delivery-panel-title">Step 2 - Choose delivery</div>
   <div class="delivery-options">
-    <div class="delivery-option selected" id="opt-nextday" style="display:none;">
-
+    <div class="delivery-option fd-hidden" id="opt-nextday">
       <div class="delivery-option-type">Next Day</div>
       <div class="delivery-option-detail">Before 5:00pm</div>
       <div class="delivery-option-charge">£40.00</div>
       <div class="delivery-option-countdown" id="nextday-countdown"></div>
     </div>
-    <div class="delivery-option" id="opt-sameday" style="display:none;">
-
+    <div class="delivery-option fd-hidden" id="opt-sameday">
       <div class="delivery-option-type">Same Day</div>
       <div class="delivery-option-detail">Before 3:00pm</div>
       <div class="delivery-option-charge">£40.00</div>
       <div class="delivery-option-countdown" id="sameday-countdown"></div>
     </div>
-    <div class="delivery-option" id="opt-addorder">
+    <div class="delivery-option selected" id="opt-addorder">
       <div class="delivery-option-type">Add to Order</div>
       <div class="delivery-option-detail">11am day prior</div>
       <div class="delivery-option-charge">No charge</div>
@@ -287,97 +286,53 @@ body { font-family: Arial, sans-serif; font-size: 13px; color: #1A1A1A; backgrou
 <script src="https://static.zdassets.com/zendesk_app_framework_sdk/2.0/zaf_sdk.min.js"></script>
 <script>
 var client=ZAFClient.init();
-var allProducts=[];
-var orderItems=[];
-var activeCategory='all';
-var selectedProduct=null;
-var searchTimeout=null;
-var accountValidated=false;
-var validatedAccount=null;
-var accountDetailsRecord=null;
-var selectedDelivery='next_day';
-var countdownInterval=null;
-var orderTimestamp=null;
-var addOrderCutoffPassed=false;
-var addOrderOverride=false;
-var isOffDay=false;
-var isQualifyingCustomer=false;
+var allProducts=[];var orderItems=[];var activeCategory='all';var selectedProduct=null;var searchTimeout=null;
+var accountValidated=false;var validatedAccount=null;var accountDetailsRecord=null;
+var selectedDelivery='add_order';
+var countdownInterval=null;var orderTimestamp=null;var addOrderCutoffPassed=false;var addOrderOverride=false;
+var isOffDay=false;var isQualifyingCustomer=false;
 
 var brandAliases={'carlsberg':['carlsberg pilsner','carlsberg export','carlsberg non','carlsberg special'],'brooklyn':['brooklyn lager','brooklyn pilsner','brooklyn stonewall','brooklyn special'],'moretti':['birra moretti','moretti'],'stella':['stella artois'],'guinness':['guinness draught','guinness original','guinness 0.0','guinness micro'],'madri':['madri excepcional'],'fosters':['fosters'],'carling':['carling'],'doom bar':['doom bar'],'strongbow':['strongbow dark','strongbow original','strongbow strawberry'],'heineken':['heineken'],'peroni':['peroni azzurro','birra poretti','poretti'],'san miguel':['san miguel'],'corona':['corona extra'],'budweiser':['budweiser'],'amstel':['amstel lager'],'coors':['coors'],'wainwright':['wainwright golden','wainwright amber','wainwright gold'],'hobgoblin':['hobgoblin gold','hobgoblin ruby','hobgoblin ipa'],'thwaites':['thwaites smooth','thwaites'],'camden':['camden pale','camden stout','camden hells'],'neck oil':['neck oil'],'london pride':['london pride','fullers london pride'],'ghost ship':['ghost ship','adnams ghost ship'],'landlord':['landlord','timothy taylors landlord'],'tribute':['tribute'],'thatchers':['thatchers gold','thatchers juicy','thatchers apple'],'aspall':['aspall cyder'],'rekorderlig':['rekorderlig'],'old mout':['old mout berries','old mout kiwi'],'kopparberg':['kopparberg mixed','kopparberg strawberry','kopparberg pear'],'somersby':['somersby apple','somersby blackberry'],'magners':['magners original','magners dark'],'bulmers':['bulmers original','bulmers red'],'pepsi':['pepsi max','pepsi cola','diet pepsi','pepsi'],'coke':['coca cola','diet coke','coca-cola'],'coca cola':['coca cola','coca-cola','diet coke'],'fentimans':['fentimans'],'red bull':['red bull'],'fever tree':['fever-tree','fever tree'],'britvic':['britvic'],'7up':['7up zero','7up free','7up'],'j2o':['j2o'],'schweppes':['schweppes'],'smirnoff':['smirnoff red','smirnoff vodka','smirnoff'],'gordons':['gordons gin','gordons pink','gordons'],'tanqueray':['tanqueray gin','tanqueray no10','tanqueray'],'bacardi':['bacardi blanca','bacardi spiced','bacardi oro','bacardi'],'captain morgan':['captain morgan','capt morgan'],'jack daniels':['jack daniels','jack daniel'],'jameson':['jameson irish','jameson'],'baileys':['baileys irish','baileys'],'prosecco':['prosecco','spumante'],'gin':['gin'],'vodka':['vodka'],'rum':['rum'],'whisky':['whisky','whiskey','scotch'],'lager':['lager','pilsner'],'cask':['cask'],'keg':['keg'],'water':['water'],'wine':['wine'],'cider':['cider'],'stout':['stout','guinness'],'ale':['ale','bitter','pale ale']};
 
-client.on('app.registered',function(){
-  client.invoke('resize',{width:'100%',height:'600px'});
-  startCountdowns();
-  setDefaultDate();
-});
+client.on('app.registered',function(){client.invoke('resize',{width:'100%',height:'600px'});startCountdowns();setDefaultDate();});
 
-// ─── WEEKEND-AWARE HELPERS ────────────────────────────────────────────────────
 function isWeekend(d){return d.getDay()===0||d.getDay()===6;}
 function nextMonday(d){var r=new Date(d);r.setHours(0,0,0,0);var day=r.getDay();r.setDate(r.getDate()+(day===0?1:day===6?2:0));return r;}
-function nextWorkingDay(d){var r=new Date(d);r.setHours(0,0,0,0);while(r.getDay()===0||r.getDay()===6)r.setDate(r.getDate()+1);return r;}
 function minsUntil(t){var ms=t-new Date();return ms<=0?null:Math.floor(ms/60000);}
 function fmtMins(m){var h=Math.floor(m/60);var mm=m%60;return h>0?h+'h '+mm+'m left':mm+'m left';}
 
-// ─── DEFAULT DATE ─────────────────────────────────────────────────────────────
-function setDefaultDate(){
-  var d=new Date();
-  d.setDate(d.getDate()+1);
-  while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);
-  var min=d.toISOString().split('T')[0];
-  var el=document.getElementById('delivery-date');
-  el.min=min;
-  el.value=min;
-  checkDeliveryDay();
-}
+function setDefaultDate(){var d=new Date();d.setDate(d.getDate()+1);while(d.getDay()===0||d.getDay()===6)d.setDate(d.getDate()+1);var min=d.toISOString().split('T')[0];var el=document.getElementById('delivery-date');el.min=min;el.value=min;checkDeliveryDay();}
 
-// ─── COUNTDOWNS ───────────────────────────────────────────────────────────────
 function startCountdowns(){updateCountdowns();countdownInterval=setInterval(updateCountdowns,60000);}
 
 function updateCountdowns(){
   var now=new Date();var dow=now.getDay();var h=now.getHours();var m=now.getMinutes();var totalMins=h*60+m;
-  var sdEl=document.getElementById('sameday-countdown');
-  var ndEl=document.getElementById('nextday-countdown');
-  var hEl=document.getElementById('header-countdown');
-  // Same Day
+  var sdEl=document.getElementById('sameday-countdown');var ndEl=document.getElementById('nextday-countdown');var hEl=document.getElementById('header-countdown');
   if(dow===0||dow===6){sdEl.textContent='Closed';sdEl.className='delivery-option-countdown closed';hEl.textContent='';}
   else{var sdLeft=15*60-totalMins;if(sdLeft<=0){sdEl.textContent='Closed today';sdEl.className='delivery-option-countdown closed';hEl.textContent='';}else{sdEl.textContent=fmtMins(sdLeft);sdEl.className='delivery-option-countdown'+(sdLeft<=60?' urgent':'');hEl.textContent='Same day: '+fmtMins(sdLeft);}}
-  // Next Day
   if(dow===0||dow===6){var mon=nextMonday(now);mon.setHours(17,0,0,0);var ndMins=minsUntil(mon);if(ndMins!==null){ndEl.textContent='Mon 5pm: '+fmtMins(ndMins);ndEl.className='delivery-option-countdown'+(ndMins<=60?' urgent':'');}else{ndEl.textContent='Closed';ndEl.className='delivery-option-countdown closed';}}
   else if(dow===5){var ndLeft=17*60-totalMins;if(ndLeft>0){ndEl.textContent=fmtMins(ndLeft);ndEl.className='delivery-option-countdown'+(ndLeft<=60?' urgent':'');}else{var monNd=new Date(now);monNd.setDate(monNd.getDate()+(8-dow));monNd.setHours(17,0,0,0);var ndMinsMon=minsUntil(monNd);if(ndMinsMon!==null){ndEl.textContent='Mon 5pm: '+fmtMins(ndMinsMon);ndEl.className='delivery-option-countdown';}else{ndEl.textContent='Closed';ndEl.className='delivery-option-countdown closed';}}}
-  else{var ndLeft=17*60-totalMins;if(ndLeft>0){ndEl.textContent=fmtMins(ndLeft);ndEl.className='delivery-option-countdown'+(ndLeft<=60?' urgent':'');}else{ndEl.textContent='Closed today';ndEl.className='delivery-option-countdown closed';}}
+  else{var ndLeft2=17*60-totalMins;if(ndLeft2>0){ndEl.textContent=fmtMins(ndLeft2);ndEl.className='delivery-option-countdown'+(ndLeft2<=60?' urgent':'');}else{ndEl.textContent='Closed today';ndEl.className='delivery-option-countdown closed';}}
   updateAddOrderCountdown();
 }
 
-function updateAddOrderCountdown(){
-  var el=document.getElementById('addorder-countdown');
-  var infoEl=document.getElementById('add-order-info');
-  if(!accountDetailsRecord){el.textContent='Confirm account';el.className='delivery-option-countdown';addOrderCutoffPassed=false;return;}
-  var deliveryDay=accountDetailsRecord.custom_object_fields.delivery_day_||'';
-  var nextDelivery=getNextDeliveryDate(deliveryDay);
-  if(!nextDelivery){el.textContent='No day set';el.className='delivery-option-countdown warning';return;}
-  var cutoff=getAddOrderCutoff(nextDelivery);
-  while(cutoff.getDay()===0||cutoff.getDay()===6){cutoff.setDate(cutoff.getDate()-1);cutoff.setHours(11,0,0,0);}
-  var now=new Date();var msLeft=cutoff-now;
-  if(msLeft<=0){addOrderCutoffPassed=true;el.textContent='Cut-off passed';el.className='delivery-option-countdown closed';document.getElementById('opt-addorder').classList.add('cutoff-passed');if(selectedDelivery==='add_order')infoEl.classList.add('visible');}
-  else{addOrderCutoffPassed=false;document.getElementById('opt-addorder').classList.remove('cutoff-passed');infoEl.classList.remove('visible');var totalMinsLeft=Math.floor(msLeft/60000);var cutoffDay=cutoff.toDateString();var today=now.toDateString();var tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);var prefix=cutoffDay===today?'Today 11am: ':cutoffDay===tomorrow.toDateString()?'Tomorrow 11am: ':cutoff.toLocaleDateString('en-GB',{weekday:'short'})+' 11am: ';el.textContent=prefix+fmtMins(totalMinsLeft);el.className='delivery-option-countdown'+(totalMinsLeft<=60?' urgent':'');}
-}
+function updateAddOrderCountdown(){var el=document.getElementById('addorder-countdown');var infoEl=document.getElementById('add-order-info');if(!accountDetailsRecord){el.textContent='Confirm account';el.className='delivery-option-countdown';addOrderCutoffPassed=false;return;}var deliveryDay=accountDetailsRecord.custom_object_fields.delivery_day_||'';var nextDelivery=getNextDeliveryDate(deliveryDay);if(!nextDelivery){el.textContent='No day set';el.className='delivery-option-countdown warning';return;}var cutoff=getAddOrderCutoff(nextDelivery);while(cutoff.getDay()===0||cutoff.getDay()===6){cutoff.setDate(cutoff.getDate()-1);cutoff.setHours(11,0,0,0);}var now=new Date();var msLeft=cutoff-now;if(msLeft<=0){addOrderCutoffPassed=true;el.textContent='Cut-off passed';el.className='delivery-option-countdown closed';document.getElementById('opt-addorder').classList.add('cutoff-passed');if(selectedDelivery==='add_order')infoEl.classList.add('visible');}else{addOrderCutoffPassed=false;document.getElementById('opt-addorder').classList.remove('cutoff-passed');infoEl.classList.remove('visible');var totalMinsLeft=Math.floor(msLeft/60000);var cutoffDay=cutoff.toDateString();var today=now.toDateString();var tomorrow=new Date(now);tomorrow.setDate(tomorrow.getDate()+1);var prefix=cutoffDay===today?'Today 11am: ':cutoffDay===tomorrow.toDateString()?'Tomorrow 11am: ':cutoff.toLocaleDateString('en-GB',{weekday:'short'})+' 11am: ';el.textContent=prefix+fmtMins(totalMinsLeft);el.className='delivery-option-countdown'+(totalMinsLeft<=60?' urgent':'');}}
 
-// ─── DELIVERY OPTION VISIBILITY ───────────────────────────────────────────────
-// Hides Same Day and Next Day for non-qualifying customers.
-// Only called after account validation — never before.
 function updateDeliveryOptions(){
   var sdEl=document.getElementById('opt-sameday');
   var ndEl=document.getElementById('opt-nextday');
   var aoEl=document.getElementById('opt-addorder');
-  if(!isQualifyingCustomer){
-    sdEl.style.display='none';
-    ndEl.style.display='none';
-    aoEl.style.display='flex';
-    selectDelivery('add_order');
+  if(isQualifyingCustomer){
+    sdEl.classList.remove('fd-hidden');
+    ndEl.classList.remove('fd-hidden');
+    ndEl.classList.add('selected');
+    aoEl.classList.remove('selected');
+    selectedDelivery='next_day';
   } else {
-    sdEl.style.display='flex';
-    ndEl.style.display='flex';
-    aoEl.style.display='flex';
+    sdEl.classList.add('fd-hidden');
+    ndEl.classList.add('fd-hidden');
+    aoEl.classList.add('selected');
+    selectedDelivery='add_order';
   }
 }
 
@@ -415,100 +370,19 @@ document.addEventListener('click',function(e){if(!document.getElementById('searc
 
 function updateSubmitButton(){var btn=document.getElementById('submit-btn');var checked=document.getElementById('confirm-checkbox').checked;var hasItems=orderItems.length>0;var dateValid=validateDeliveryDate();var offDayOk=!isOffDay||document.getElementById('off-day-confirm').checked;if(selectedDelivery==='add_order'&&addOrderCutoffPassed&&!addOrderOverride){btn.disabled=true;btn.classList.remove('active','depot-pending');return;}if(checked&&hasItems&&dateValid&&offDayOk){btn.disabled=false;if(selectedDelivery==='add_order'&&addOrderCutoffPassed&&addOrderOverride){btn.classList.remove('active');btn.classList.add('depot-pending');btn.textContent='Request depot availability';}else{btn.classList.add('active');btn.classList.remove('depot-pending');btn.textContent='Submit my order';}}else{btn.disabled=true;btn.classList.remove('active','depot-pending');btn.textContent='Submit my order';}}
 
-function selectDelivery(type){
-  selectedDelivery=type;
-  document.getElementById('opt-nextday').classList.toggle('selected',type==='next_day');
-  document.getElementById('opt-sameday').classList.toggle('selected',type==='same_day');
-  document.getElementById('opt-addorder').classList.toggle('selected',type==='add_order');
-  var infoEl=document.getElementById('add-order-info');
-  if(type==='add_order'&&addOrderCutoffPassed)infoEl.classList.add('visible');
-  else infoEl.classList.remove('visible');
-  resetConfirm();updateOrderSummary();updateTicketField();updateSubmitButton();
-}
+function selectDelivery(type){selectedDelivery=type;document.getElementById('opt-nextday').classList.toggle('selected',type==='next_day');document.getElementById('opt-sameday').classList.toggle('selected',type==='same_day');document.getElementById('opt-addorder').classList.toggle('selected',type==='add_order');var infoEl=document.getElementById('add-order-info');if(type==='add_order'&&addOrderCutoffPassed)infoEl.classList.add('visible');else infoEl.classList.remove('visible');resetConfirm();updateOrderSummary();updateTicketField();updateSubmitButton();}
 
 function validateDeliveryDate(){var val=document.getElementById('delivery-date').value;var errorEl=document.getElementById('date-error');if(!val){errorEl.style.display='block';errorEl.textContent='Please select a delivery date.';return false;}var selected=new Date(val);var today=new Date();today.setHours(0,0,0,0);if(selected<=today){errorEl.style.display='block';errorEl.textContent='Please select a future date.';return false;}if(selected.getDay()===0||selected.getDay()===6){errorEl.style.display='block';errorEl.textContent='We deliver Monday to Friday only.';return false;}errorEl.style.display='none';return true;}
 
-function validateAccount(){
-  var accountNumber=document.getElementById('account-input').value.trim();
-  var requesterName=getRequesterName();
-  var requesterPostcode=getRequesterPostcode();
-  if(!requesterName){showAccountStatus('error','Please enter the name of the person placing this order.');document.getElementById('requester-name').focus();return;}
-  if(!requesterPostcode){showAccountStatus('error','Please enter your delivery postcode.');document.getElementById('requester-postcode').focus();return;}
-  if(!accountNumber){showAccountStatus('error','Please enter your account number.');return;}
-  showAccountStatus('loading','Looking up your account...');
-  document.getElementById('validate-btn').disabled=true;
-  Promise.all([
-    client.request({url:'/api/v2/custom_objects/fdcustomeraccount/records/search?query='+encodeURIComponent(accountNumber),type:'GET'}).catch(function(){return{custom_object_records:[];};}),
-    client.request({url:'/api/v2/custom_objects/account_details/records/search?query='+encodeURIComponent(accountNumber),type:'GET'}).catch(function(){return{custom_object_records:[]};})
-  ]).then(function(results){
-    var fdRecords=results[0].custom_object_records||[];
-    var adRecords=results[1].custom_object_records||[];
-    var fdMatch=null;
-    fdRecords.forEach(function(r){if(r.custom_object_fields.account_number===accountNumber)fdMatch=r;});
-    var adMatch=null;
-    adRecords.forEach(function(r){if(r.custom_object_fields.ship_to_number===accountNumber)adMatch=r;});
-    if(!fdMatch&&!adMatch){showAccountStatus('error','Account not found. Please check your account number and try again, or contact your Sales Development Manager.');document.getElementById('validate-btn').disabled=false;return;}
-    if(fdMatch){validatedAccount=Object.assign({},fdMatch.custom_object_fields);validatedAccount.record_id=fdMatch.id;validatedAccount.name=fdMatch.name||fdMatch.custom_object_fields.name||'';}
-    else{validatedAccount={account_number:accountNumber,name:adMatch.name||'',record_id:adMatch.id};}
-    validatedAccount.requester_name=requesterName;
-    if(adMatch)accountDetailsRecord=adMatch;
-    var accountPostcode='';
-    if(adMatch&&adMatch.custom_object_fields.postcode){accountPostcode=normalisePostcode(adMatch.custom_object_fields.postcode);}
-    else if(fdMatch&&fdMatch.custom_object_fields.delivery_postcode){accountPostcode=normalisePostcode(fdMatch.custom_object_fields.delivery_postcode);}
-    var enteredPostcode=normalisePostcode(requesterPostcode);
-    if(accountPostcode&&enteredPostcode!==accountPostcode){showAccountStatus('warning','Postcode does not match our records. This order will be flagged for manual review.');validatedAccount.postcode_mismatch=true;}
-    else{validatedAccount.postcode_mismatch=false;document.getElementById('account-status').style.display='none';}
-    isQualifyingCustomer=fdMatch!==null;
-    accountValidated=true;
-    showAccountConfirmed(validatedAccount);
-    document.getElementById('delivery-panel').style.display='block';
-    updateDeliveryOptions();
-    updateAddOrderCountdown();
-    checkDeliveryDay();
-    loadProducts();
-  }).catch(function(){showAccountStatus('error','Could not look up account. Please try again or call us on 0800 587 0773.');document.getElementById('validate-btn').disabled=false;});
-}
+function validateAccount(){var accountNumber=document.getElementById('account-input').value.trim();var requesterName=getRequesterName();var requesterPostcode=getRequesterPostcode();if(!requesterName){showAccountStatus('error','Please enter the name of the person placing this order.');document.getElementById('requester-name').focus();return;}if(!requesterPostcode){showAccountStatus('error','Please enter your delivery postcode.');document.getElementById('requester-postcode').focus();return;}if(!accountNumber){showAccountStatus('error','Please enter your account number.');return;}showAccountStatus('loading','Looking up your account...');document.getElementById('validate-btn').disabled=true;Promise.all([client.request({url:'/api/v2/custom_objects/fdcustomeraccount/records/search?query='+encodeURIComponent(accountNumber),type:'GET'}).catch(function(){return{custom_object_records:[]};}),client.request({url:'/api/v2/custom_objects/account_details/records/search?query='+encodeURIComponent(accountNumber),type:'GET'}).catch(function(){return{custom_object_records:[]};})]).then(function(results){var fdRecords=results[0].custom_object_records||[];var adRecords=results[1].custom_object_records||[];var fdMatch=null;fdRecords.forEach(function(r){if(r.custom_object_fields.account_number===accountNumber)fdMatch=r;});var adMatch=null;adRecords.forEach(function(r){if(r.custom_object_fields.ship_to_number===accountNumber)adMatch=r;});if(!fdMatch&&!adMatch){showAccountStatus('error','Account not found. Please check your account number and try again, or contact your Sales Development Manager.');document.getElementById('validate-btn').disabled=false;return;}if(fdMatch){validatedAccount=Object.assign({},fdMatch.custom_object_fields);validatedAccount.record_id=fdMatch.id;validatedAccount.name=fdMatch.name||fdMatch.custom_object_fields.name||'';}else{validatedAccount={account_number:accountNumber,name:adMatch.name||'',record_id:adMatch.id};}validatedAccount.requester_name=requesterName;if(adMatch)accountDetailsRecord=adMatch;var accountPostcode='';if(adMatch&&adMatch.custom_object_fields.postcode){accountPostcode=normalisePostcode(adMatch.custom_object_fields.postcode);}else if(fdMatch&&fdMatch.custom_object_fields.delivery_postcode){accountPostcode=normalisePostcode(fdMatch.custom_object_fields.delivery_postcode);}var enteredPostcode=normalisePostcode(requesterPostcode);if(accountPostcode&&enteredPostcode!==accountPostcode){showAccountStatus('warning','Postcode does not match our records. This order will be flagged for manual review.');validatedAccount.postcode_mismatch=true;}else{validatedAccount.postcode_mismatch=false;document.getElementById('account-status').style.display='none';}isQualifyingCustomer=fdMatch!==null;accountValidated=true;showAccountConfirmed(validatedAccount);document.getElementById('delivery-panel').style.display='block';updateDeliveryOptions();updateAddOrderCountdown();checkDeliveryDay();loadProducts();}).catch(function(){showAccountStatus('error','Could not look up account. Please try again or call us on 0800 587 0773.');document.getElementById('validate-btn').disabled=false;});}
 
 function showAccountConfirmed(account){document.getElementById('account-status').style.display='none';document.getElementById('account-confirmed').style.display='block';document.getElementById('confirmed-name').textContent=account.name||'Your venue';var postcode=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.postcode||''):(account.delivery_postcode||'');document.getElementById('confirmed-postcode').textContent=postcode;var depot=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.depot_||''):'';var shipTo=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.ship_to_number||''):'';var timeStart=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.time_window_start||''):'';var timeEnd=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.time_window_end||''):'';var timeWindow=timeStart?timeStart.substring(0,5)+(timeEnd?' - '+timeEnd.substring(0,5):''):'';var metaParts=[];if(depot)metaParts.push(depot);if(shipTo)metaParts.push('Ship-to: '+shipTo);if(timeWindow)metaParts.push('Window: '+timeWindow);document.getElementById('confirmed-meta').textContent=metaParts.join(' | ');var deliveryDay=accountDetailsRecord?(accountDetailsRecord.custom_object_fields.delivery_day_||''):'';var ddEl=document.getElementById('confirmed-delivery-day');if(deliveryDay){ddEl.innerHTML='<span class="delivery-day-badge">Scheduled delivery: '+deliveryDay+'</span>';}else{ddEl.innerHTML='';}document.getElementById('account-panel').style.background=account.postcode_mismatch?'#FFF8E8':'#F0F8F4';document.getElementById('account-panel').style.borderColor=account.postcode_mismatch?'#F0D080':'#B3DEC8';client.set('ticket.subject','Fast Delivery Order - '+(account.name||account.account_number));}
 
 function showAccountStatus(type,msg){var el=document.getElementById('account-status');el.style.display='block';el.className='account-status '+type;el.textContent=msg;}
 
-function changeAccount(){
-  accountValidated=false;validatedAccount=null;accountDetailsRecord=null;allProducts=[];orderItems=[];
-  selectedDelivery='next_day';orderTimestamp=null;addOrderCutoffPassed=false;addOrderOverride=false;
-  isOffDay=false;isQualifyingCustomer=false;
-  document.getElementById('account-input').value='';
-  document.getElementById('requester-name').value='';
-  document.getElementById('requester-postcode').value='';
-  document.getElementById('account-confirmed').style.display='none';
-  document.getElementById('account-status').style.display='none';
-  document.getElementById('account-panel').style.background='#fff';
-  document.getElementById('account-panel').style.borderColor='#EBEBEB';
-  document.getElementById('validate-btn').disabled=false;
-  document.getElementById('delivery-panel').style.display='none';
-  document.getElementById('product-section').style.display='none';
-  document.getElementById('order-section').style.display='none';
-  document.getElementById('confirm-section').style.display='none';
-  document.getElementById('order-summary-panel').style.display='none';
-  document.getElementById('confirmation-screen').style.display='none';
-  document.getElementById('add-order-info').classList.remove('visible');
-  document.getElementById('add-order-override').checked=false;
-  document.getElementById('normal-day-msg').classList.remove('visible');
-  document.getElementById('off-day-msg').classList.remove('visible');
-  document.getElementById('off-day-confirm').checked=false;
-  document.getElementById('delivery-date').className='';
-  document.getElementById('status-bar').className='status-bar';
-  // Reset all delivery tiles to visible and default selection
-  document.getElementById('opt-nextday').classList.add('selected');
-  document.getElementById('opt-nextday').style.display='flex';
-  document.getElementById('opt-sameday').classList.remove('selected');
-  document.getElementById('opt-sameday').style.display='flex';
-  document.getElementById('opt-addorder').classList.remove('selected');
-  document.getElementById('opt-addorder').style.display='flex';
-  resetConfirm();renderOrder();setDefaultDate();
-}
+function changeAccount(){accountValidated=false;validatedAccount=null;accountDetailsRecord=null;allProducts=[];orderItems=[];selectedDelivery='add_order';orderTimestamp=null;addOrderCutoffPassed=false;addOrderOverride=false;isOffDay=false;isQualifyingCustomer=false;document.getElementById('account-input').value='';document.getElementById('requester-name').value='';document.getElementById('requester-postcode').value='';document.getElementById('account-confirmed').style.display='none';document.getElementById('account-status').style.display='none';document.getElementById('account-panel').style.background='#fff';document.getElementById('account-panel').style.borderColor='#EBEBEB';document.getElementById('validate-btn').disabled=false;document.getElementById('delivery-panel').style.display='none';document.getElementById('product-section').style.display='none';document.getElementById('order-section').style.display='none';document.getElementById('confirm-section').style.display='none';document.getElementById('order-summary-panel').style.display='none';document.getElementById('confirmation-screen').style.display='none';document.getElementById('add-order-info').classList.remove('visible');document.getElementById('add-order-override').checked=false;document.getElementById('normal-day-msg').classList.remove('visible');document.getElementById('off-day-msg').classList.remove('visible');document.getElementById('off-day-confirm').checked=false;document.getElementById('delivery-date').className='';document.getElementById('status-bar').className='status-bar';document.getElementById('opt-nextday').classList.add('fd-hidden');document.getElementById('opt-nextday').classList.remove('selected');document.getElementById('opt-sameday').classList.add('fd-hidden');document.getElementById('opt-sameday').classList.remove('selected');document.getElementById('opt-addorder').classList.add('selected');resetConfirm();renderOrder();setDefaultDate();}
 
-function loadProducts(){document.getElementById('product-section').style.display='block';showLoading(true);function fetchAll(url,collected){collected=collected||[];return client.request({url:url,type:'GET'}).then(function(data){collected=collected.concat(data.custom_object_records||[]);if(data.meta&&data.meta.has_more&&data.links&&data.links.next)return fetchAll(data.links.next.replace('https://carlsbergmarstons.zendesk.com',''),collected);return collected;});}fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords){var seenSkus={};allProducts=[];allRecords.forEach(function(p){var sku=p.custom_object_fields.sku||p.id;var name=p.name||p.custom_object_fields.name||'';if(!name||name.length<3)return;if(seenSkus[sku])return;seenSkus[sku]=true;var nl=name.toLowerCase();var cat=p.custom_object_fields.category||'';if(!cat){if(nl.indexOf('keg')!==-1||nl.indexOf('dmm')!==-1||nl.indexOf('draughtmaster')!==-1){if(nl.indexOf('cider')!==-1)cat='cider';else cat='draught';}else if(nl.indexOf('cask')!==-1||nl.indexOf('9g')!==-1||nl.indexOf('4.5g')!==-1)cat='cask';else if(nl.indexOf('cider')!==-1)cat='cider';else if(nl.indexOf('gin')!==-1||nl.indexOf('vodka')!==-1||nl.indexOf('rum')!==-1||nl.indexOf('whisky')!==-1||nl.indexOf('whiskey')!==-1||nl.indexOf('brandy')!==-1||nl.indexOf('cognac')!==-1||nl.indexOf('tequila')!==-1||nl.indexOf('liqueur')!==-1||nl.indexOf('schnapps')!==-1||nl.indexOf('sambuca')!==-1||nl.indexOf('amaretto')!==-1||nl.indexOf('vermouth')!==-1||nl.indexOf('port')!==-1||nl.indexOf('sherry')!==-1)cat='spirits';else if(nl.indexOf('wine')!==-1||nl.indexOf('prosecco')!==-1||nl.indexOf('champagne')!==-1||nl.indexOf('cava')!==-1||nl.indexOf('merlot')!==-1||nl.indexOf('chardonnay')!==-1||nl.indexOf('sauvignon')!==-1||nl.indexOf('pinot')!==-1||nl.indexOf('rioja')!==-1||nl.indexOf('malbec')!==-1||nl.indexOf('shiraz')!==-1||nl.indexOf('cabernet')!==-1||nl.indexOf('brut')!==-1||nl.indexOf('spumante')!==-1)cat='wine';else if(nl.indexOf('pepsi')!==-1||nl.indexOf('cola')!==-1||nl.indexOf('lemonade')!==-1||nl.indexOf('tonic')!==-1||nl.indexOf('juice')!==-1||nl.indexOf('water')!==-1||nl.indexOf('ginger')!==-1||nl.indexOf('fever')!==-1||nl.indexOf('britvic')!==-1||nl.indexOf('fentimans')!==-1||nl.indexOf('red bull')!==-1||nl.indexOf('7up')!==-1||nl.indexOf('schweppes')!==-1||nl.indexOf('j2o')!==-1||nl.indexOf('cordial')!==-1||nl.indexOf('squash')!==-1||nl.indexOf('energy')!==-1||nl.indexOf('mineral')!==-1)cat='soft_drink';else cat='packaged';}allProducts.push({id:p.id,name:name,sku:sku,category:cat,search_keywords:p.custom_object_fields.search_keywords||''});showLoading(false);document.getElementById('order-section').style.display='block';renderOrder();showStatus(allProducts.length+' products available',false);}).catch(function(){showLoading(false);document.getElementById('order-section').style.display='block';showStatus('Could not load products. Please refresh or call 0800 587 0773.',true);});}
+function loadProducts(){document.getElementById('product-section').style.display='block';showLoading(true);function fetchAll(url,collected){collected=collected||[];return client.request({url:url,type:'GET'}).then(function(data){collected=collected.concat(data.custom_object_records||[]);if(data.meta&&data.meta.has_more&&data.links&&data.links.next)return fetchAll(data.links.next.replace('https://carlsbergmarstons.zendesk.com',''),collected);return collected;});}fetchAll('/api/v2/custom_objects/cb_product/records?page[size]=100').then(function(allRecords){var seenSkus={};allProducts=[];allRecords.forEach(function(p){var sku=p.custom_object_fields.sku||p.id;var name=p.name||p.custom_object_fields.name||'';if(!name||name.length<3)return;if(seenSkus[sku])return;seenSkus[sku]=true;var nl=name.toLowerCase();var cat=p.custom_object_fields.category||'';if(!cat){if(nl.indexOf('keg')!==-1||nl.indexOf('dmm')!==-1||nl.indexOf('draughtmaster')!==-1){if(nl.indexOf('cider')!==-1)cat='cider';else cat='draught';}else if(nl.indexOf('cask')!==-1||nl.indexOf('9g')!==-1||nl.indexOf('4.5g')!==-1)cat='cask';else if(nl.indexOf('cider')!==-1)cat='cider';else if(nl.indexOf('gin')!==-1||nl.indexOf('vodka')!==-1||nl.indexOf('rum')!==-1||nl.indexOf('whisky')!==-1||nl.indexOf('whiskey')!==-1||nl.indexOf('brandy')!==-1||nl.indexOf('cognac')!==-1||nl.indexOf('tequila')!==-1||nl.indexOf('liqueur')!==-1||nl.indexOf('schnapps')!==-1||nl.indexOf('sambuca')!==-1||nl.indexOf('amaretto')!==-1||nl.indexOf('vermouth')!==-1||nl.indexOf('port')!==-1||nl.indexOf('sherry')!==-1)cat='spirits';else if(nl.indexOf('wine')!==-1||nl.indexOf('prosecco')!==-1||nl.indexOf('champagne')!==-1||nl.indexOf('cava')!==-1||nl.indexOf('merlot')!==-1||nl.indexOf('chardonnay')!==-1||nl.indexOf('sauvignon')!==-1||nl.indexOf('pinot')!==-1||nl.indexOf('rioja')!==-1||nl.indexOf('malbec')!==-1||nl.indexOf('shiraz')!==-1||nl.indexOf('cabernet')!==-1||nl.indexOf('brut')!==-1||nl.indexOf('spumante')!==-1)cat='wine';else if(nl.indexOf('pepsi')!==-1||nl.indexOf('cola')!==-1||nl.indexOf('lemonade')!==-1||nl.indexOf('tonic')!==-1||nl.indexOf('juice')!==-1||nl.indexOf('water')!==-1||nl.indexOf('ginger')!==-1||nl.indexOf('fever')!==-1||nl.indexOf('britvic')!==-1||nl.indexOf('fentimans')!==-1||nl.indexOf('red bull')!==-1||nl.indexOf('7up')!==-1||nl.indexOf('schweppes')!==-1||nl.indexOf('j2o')!==-1||nl.indexOf('cordial')!==-1||nl.indexOf('squash')!==-1||nl.indexOf('energy')!==-1||nl.indexOf('mineral')!==-1)cat='soft_drink';else cat='packaged';}allProducts.push({id:p.id,name:name,sku:sku,category:cat,search_keywords:p.custom_object_fields.search_keywords||''});});showLoading(false);document.getElementById('order-section').style.display='block';renderOrder();showStatus(allProducts.length+' products available',false);}).catch(function(){showLoading(false);document.getElementById('order-section').style.display='block';showStatus('Could not load products. Please refresh or call 0800 587 0773.',true);});}
 function getSearchTerms(query){var terms=[query];var direct=brandAliases[query];if(direct)terms=terms.concat(direct);Object.keys(brandAliases).forEach(function(key){if(key!==query&&(query.indexOf(key)!==-1||key.indexOf(query)!==-1))terms=terms.concat(brandAliases[key]);});return terms.filter(function(t,i,arr){return arr.indexOf(t)===i;});}
 function matchesSearch(p,query){var terms=getSearchTerms(query);var nameL=p.name.toLowerCase();var skuL=p.sku.toLowerCase();var kwL=(p.search_keywords||'').toLowerCase();return terms.some(function(t){return nameL.indexOf(t)!==-1||skuL.indexOf(t)!==-1||kwL.indexOf(t)!==-1;});}
 function setTab(el){document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');activeCategory=el.getAttribute('data-cat');var query=document.getElementById('search-input').value.trim().toLowerCase();if(query.length>0)onSearch();else if(activeCategory!=='all')showCategoryBrowse();else closeDropdown();}
@@ -535,3 +409,5 @@ function showStatus(msg,isWarning){var bar=document.getElementById('status-bar')
 </script>
 </body>
 </html>
+
+
